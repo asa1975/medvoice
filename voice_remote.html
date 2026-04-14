@@ -47,6 +47,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 #transcript-txt.ph{font-size:14px;font-weight:300;color:var(--muted);}
 #transcript-txt.interim{color:var(--accent);}
 #transcript-txt.matched{color:var(--green);}
+#transcript-txt.alias{color:var(--warn);}
 #transcript-txt.nomatch{color:var(--danger);}
 
 #waveform{display:flex;align-items:center;justify-content:center;gap:4px;height:36px;opacity:0;transition:opacity .3s;}
@@ -67,16 +68,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 @keyframes rspin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 #mic-btn:active{transform:scale(.93);}
 .mic-hint{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em;}
-#feedback{font-family:var(--mono);font-size:12px;letter-spacing:.08em;height:18px;text-align:center;opacity:0;transition:opacity .25s;}
+#feedback{font-family:var(--mono);font-size:12px;letter-spacing:.06em;min-height:18px;text-align:center;opacity:0;transition:opacity .25s;line-height:1.4;}
 #feedback.show{opacity:1;}
 
+/* LOG */
 #log{display:flex;flex-direction:column;gap:6px;}
-.log-row{display:flex;align-items:center;gap:8px;font-size:13px;animation:fi .3s forwards;opacity:0;}
+.log-row{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:8px;animation:fi .3s forwards;opacity:0;}
 @keyframes fi{to{opacity:1;}}
+.log-row.ok  {background:rgba(10,240,160,.07);border:1px solid rgba(10,240,160,.15);}
+.log-row.alias{background:rgba(240,168,10,.07);border:1px solid rgba(240,168,10,.20);}
+.log-row.ng  {background:rgba(240,64,64,.07); border:1px solid rgba(240,64,64,.15);}
+.log-main{display:flex;align-items:center;gap:8px;}
 .lt{font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;}
-.lw{color:var(--accent);font-weight:700;}
-.ls-ok{color:var(--green);font-size:11px;}
-.ls-ng{color:var(--danger);font-size:11px;}
+.lw{font-size:14px;font-weight:700;}
+.lw.ok   {color:var(--green);}
+.lw.alias{color:var(--warn);}
+.lw.ng   {color:var(--danger);}
+.ls{font-family:var(--mono);font-size:10px;margin-left:auto;flex-shrink:0;}
+.ls.ok   {color:var(--green);}
+.ls.alias{color:var(--warn);}
+.ls.ng   {color:var(--danger);}
+.log-sub{font-family:var(--mono);font-size:10px;color:var(--muted);padding-left:2px;}
+.log-sub .raw{color:var(--warn);}
 
 /* WORD CARDS */
 .word-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
@@ -88,7 +101,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 .del-word-btn:active{color:var(--danger);}
 .toggle-icon{color:var(--muted);font-size:13px;flex-shrink:0;transition:transform .2s;}
 .toggle-icon.open{transform:rotate(180deg);}
-
 .pattern-area{display:none;border-top:1px solid var(--border);padding:12px 14px;background:var(--s2);}
 .pattern-area.open{display:block;}
 .pattern-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
@@ -115,12 +127,27 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 .section-title{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
 .empty-note{font-size:13px;color:var(--muted);text-align:center;padding:16px;}
 
+/* SETTINGS */
 .setting-row{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
 .setting-row label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
-.setting-row select{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;outline:none;width:100%;}
+.setting-row input,.setting-row select{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .2s;}
+.setting-row input:focus{border-color:var(--accent);}
+.key-row{display:flex;gap:8px;}
+.key-row input{flex:1;}
 .info-box{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.9;color:var(--muted);}
 .info-box b{color:var(--accent);}
 .info-box code{color:var(--text);background:var(--bg);padding:1px 5px;border-radius:4px;}
+.key-display{
+  background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;font-family:var(--mono);font-size:12px;
+  color:var(--accent);word-break:break-all;letter-spacing:.05em;
+  margin-top:8px;
+}
+.badge-auth{
+  display:inline-block;background:rgba(10,240,160,.15);border:1px solid rgba(10,240,160,.3);
+  color:var(--green);font-family:var(--mono);font-size:10px;
+  border-radius:4px;padding:2px 8px;letter-spacing:.08em;
+}
 </style>
 </head>
 <body>
@@ -202,19 +229,37 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 
 <!-- SETTINGS -->
 <div id="page-settings" class="page">
+
+  <!-- デバイスキー -->
+  <div class="card">
+    <div class="card-label">🔑 デバイス認証キー</div>
+    <div class="info-box" style="margin-bottom:12px;">
+      このキーをラズパイ側の <code>DEVICE_KEY</code> に設定してください。<br>
+      キーが一致しないスマホからの送信は<b>拒否</b>されます。
+    </div>
+    <div class="key-display" id="key-display">-</div>
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="btn-full" style="margin:0;" onclick="regenKey()">🔄 キーを再生成</button>
+      <button class="btn-full outline" style="margin:0;" onclick="copyKey()">📋 コピー</button>
+    </div>
+  </div>
+
+  <!-- 接続 -->
   <div class="card">
     <div class="card-label">接続方法</div>
     <div class="info-box">
       <b>同一Wi-Fi</b><br>
       <code>ws://ラズパイIP:8765</code><br><br>
-      <b>外出先（ngrok）</b><br>
+      <b>外出先（ngrok TCP）</b><br>
       <code>ngrok tcp 8765</code><br>
       → <code>ws://x.tcp.ngrok.io:XXXXX</code><br><br>
-      <b>HTTPS環境</b><br>
+      <b>HTTPS環境（ngrok HTTP）</b><br>
       <code>ngrok http 8765</code><br>
       → <code>wss://xxx.ngrok-free.app</code>
     </div>
   </div>
+
+  <!-- マッチング -->
   <div class="card">
     <div class="card-label">マッチング</div>
     <div class="setting-row">
@@ -225,6 +270,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
       </select>
     </div>
   </div>
+
+  <!-- データ管理 -->
   <div class="card">
     <div class="card-label">データ管理</div>
     <button class="btn-full" onclick="exportData()">💾 エクスポート</button>
@@ -232,24 +279,48 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
     <button class="btn-full danger" onclick="resetWords()">🗑 デフォルトに戻す</button>
   </div>
+
   <div class="card">
     <div class="card-label">アプリ情報</div>
     <div class="info-box">
-      <b>MedVoice Remote v3.0</b><br>
-      音声認識 → パターンマッチ → 送信<br><br>
+      <b>MedVoice Remote v4.0</b><br>
+      音声認識 → パターンマッチ → 認証付き送信<br><br>
       Safari → 共有 → ホーム画面に追加
     </div>
   </div>
 </div>
 
 <script>
-// ─── HELPERS（先に定義） ──────────────────────────────
-function uid(){
-  return Math.random().toString(36).slice(2,9);
-}
+// ─── HELPERS ──────────────────────────────────────────
+function uid(){ return Math.random().toString(36).slice(2,9); }
 function pad(n){ return String(n).padStart(2,'0'); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function flashEl(el){ el.style.borderColor='var(--danger)'; setTimeout(function(){ el.style.borderColor=''; },1200); }
+
+// ─── DEVICE KEY ───────────────────────────────────────
+function genKey(){
+  var arr = new Uint8Array(24);
+  window.crypto.getRandomValues(arr);
+  return Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+}
+function loadKey(){
+  var k = localStorage.getItem('device_key');
+  if(!k){ k = genKey(); localStorage.setItem('device_key', k); }
+  return k;
+}
+var deviceKey = loadKey();
+
+function regenKey(){
+  if(!confirm('キーを再生成するとラズパイ側の設定も変更が必要です。続けますか？')) return;
+  deviceKey = genKey();
+  localStorage.setItem('device_key', deviceKey);
+  document.getElementById('key-display').textContent = deviceKey;
+}
+function copyKey(){
+  navigator.clipboard.writeText(deviceKey).then(function(){
+    showFB('📋 キーをコピーしました','var(--accent)');
+  });
+}
 
 // ─── DEFAULT WORDS ────────────────────────────────────
 function makeDefaultWords(){
@@ -276,12 +347,13 @@ var ws        = null;
 var recog     = null;
 var isRec     = false;
 var lastTxt   = '';
+var lastHit   = null;  // {word, raw, isAlias}
 var matchMode = localStorage.getItem('matchMode') || 'partial';
 
 function loadWords(){
   try{
     var s = localStorage.getItem('medwords_v3');
-    if(s){ var d=JSON.parse(s); if(Array.isArray(d) && d.length>0) return d; }
+    if(s){ var d=JSON.parse(s); if(Array.isArray(d)&&d.length>0) return d; }
   }catch(e){}
   return makeDefaultWords();
 }
@@ -292,7 +364,7 @@ function showTab(name){
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
   document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById('page-'+name).classList.add('active');
-  var idx = {home:0, words:1, settings:2}[name];
+  var idx={home:0,words:1,settings:2}[name];
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
   if(name==='words')    renderWords();
   if(name==='settings') initSettings();
@@ -309,18 +381,17 @@ function renderWords(){
 }
 
 function renderWordCard(w){
-  var pChips = (w.patterns||[]).map(function(p, pi){
-    var isMain = (p === w.word);
+  var pChips = (w.patterns||[]).map(function(p,pi){
+    var isMain = (p===w.word);
     if(isMain){
       return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>';
-    } else {
-      return '<div class="pattern-chip"><span>'+esc(p)+'</span>'
-        +'<button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
     }
+    return '<div class="pattern-chip"><span>'+esc(p)+'</span>'
+      +'<button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
   }).join('');
 
   return '<div class="word-card" id="wcard-'+w.id+'">'
-    +'<div class="word-card-header" id="whdr-'+w.id+'" onclick="toggleCard(\''+w.id+'\')">'
+    +'<div class="word-card-header" onclick="toggleCard(\''+w.id+'\')">'
     +'<span class="wch-name">'+esc(w.word)+'</span>'
     +'<span class="cat-badge'+(w.cat==='rec'?' rec':'')+'">'+( w.cat==='med'?'医療':'記録')+'</span>'
     +'<button class="del-word-btn" onclick="delWord(\''+w.id+'\',event)">🗑</button>'
@@ -336,166 +407,160 @@ function renderWordCard(w){
 }
 
 function toggleCard(id){
-  var area = document.getElementById('parea-'+id);
-  var icon = document.getElementById('tico-'+id);
-  var isOpen = area.classList.contains('open');
-  if(isOpen){
-    area.classList.remove('open');
-    icon.classList.remove('open');
-  } else {
-    area.classList.add('open');
-    icon.classList.add('open');
-  }
+  var area=document.getElementById('parea-'+id);
+  var icon=document.getElementById('tico-'+id);
+  if(area.classList.contains('open')){ area.classList.remove('open'); icon.classList.remove('open'); }
+  else { area.classList.add('open'); icon.classList.add('open'); }
 }
 
 function addWord(){
-  var inp = document.getElementById('new-word');
-  var cat = document.getElementById('new-cat').value;
-  var w   = inp.value.trim();
+  var inp=document.getElementById('new-word');
+  var cat=document.getElementById('new-cat').value;
+  var w=inp.value.trim();
   if(!w) return;
-  var dup = words.some(function(x){ return x.word===w; });
-  if(dup){ flashEl(inp); return; }
-  words.push({id:uid(), word:w, cat:cat, patterns:[w]});
+  if(words.some(function(x){ return x.word===w; })){ flashEl(inp); return; }
+  words.push({id:uid(),word:w,cat:cat,patterns:[w]});
   saveWords(); inp.value=''; renderWords();
 }
 
-function delWord(id, e){
+function delWord(id,e){
   e.stopPropagation();
-  var w = words.filter(function(x){ return x.id===id; })[0];
-  if(!w || !confirm('「'+w.word+'」を削除しますか？')) return;
-  words = words.filter(function(x){ return x.id!==id; });
+  var w=words.filter(function(x){ return x.id===id; })[0];
+  if(!w||!confirm('「'+w.word+'」を削除しますか？')) return;
+  words=words.filter(function(x){ return x.id!==id; });
   saveWords(); renderWords();
 }
 
 function addPattern(id){
-  var inp = document.getElementById('pinput-'+id);
-  var val = inp.value.trim();
+  var inp=document.getElementById('pinput-'+id);
+  var val=inp.value.trim();
   if(!val) return;
-  var w = words.filter(function(x){ return x.id===id; })[0];
+  var w=words.filter(function(x){ return x.id===id; })[0];
   if(!w) return;
-  if(w.patterns.indexOf(val) >= 0){ flashEl(inp); return; }
+  if(w.patterns.indexOf(val)>=0){ flashEl(inp); return; }
   w.patterns.push(val);
-  saveWords();
-  refreshPatternList(w);
-  inp.value='';
+  saveWords(); refreshPatternList(w); inp.value='';
 }
 
-function delPattern(id, pi){
-  var w = words.filter(function(x){ return x.id===id; })[0];
+function delPattern(id,pi){
+  var w=words.filter(function(x){ return x.id===id; })[0];
   if(!w) return;
   if(w.patterns[pi]===w.word){ alert('送信ワード本体は削除できません'); return; }
   w.patterns.splice(pi,1);
-  saveWords();
-  refreshPatternList(w);
+  saveWords(); refreshPatternList(w);
 }
 
 function refreshPatternList(w){
-  var el = document.getElementById('plist-'+w.id);
+  var el=document.getElementById('plist-'+w.id);
   if(!el) return;
-  el.innerHTML = (w.patterns||[]).map(function(p,pi){
-    var isMain = (p === w.word);
-    if(isMain){
-      return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>';
-    } else {
-      return '<div class="pattern-chip"><span>'+esc(p)+'</span>'
-        +'<button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
-    }
+  el.innerHTML=(w.patterns||[]).map(function(p,pi){
+    var isMain=(p===w.word);
+    if(isMain) return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>';
+    return '<div class="pattern-chip"><span>'+esc(p)+'</span>'
+      +'<button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
   }).join('');
 }
 
 function resetWords(){
   if(!confirm('全ワードをデフォルトに戻しますか？')) return;
-  words = makeDefaultWords();
-  saveWords(); renderWords();
+  words=makeDefaultWords(); saveWords(); renderWords();
 }
-
 function exportData(){
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(words,null,2)],{type:'application/json'}));
-  a.download = 'medvoice_words.json';
-  a.click();
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(words,null,2)],{type:'application/json'}));
+  a.download='medvoice_words.json'; a.click();
 }
 function importClick(){ document.getElementById('import-file').click(); }
 function importData(e){
-  var f = e.target.files[0]; if(!f) return;
-  var r = new FileReader();
-  r.onload = function(ev){
-    try{
-      var d = JSON.parse(ev.target.result);
-      if(!Array.isArray(d)) throw 0;
-      words = d; saveWords(); renderWords(); alert('インポート完了');
-    }catch(err){ alert('形式エラー'); }
+  var f=e.target.files[0]; if(!f) return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    try{ var d=JSON.parse(ev.target.result); if(!Array.isArray(d)) throw 0; words=d; saveWords(); renderWords(); alert('インポート完了'); }
+    catch(err){ alert('形式エラー'); }
   };
   r.readAsText(f);
 }
 
 // ─── SETTINGS ─────────────────────────────────────────
 function initSettings(){
-  var sel = document.getElementById('match-mode');
-  sel.value = matchMode;
-  sel.onchange = function(e){ matchMode=e.target.value; localStorage.setItem('matchMode',matchMode); };
+  document.getElementById('key-display').textContent = deviceKey;
+  var sel=document.getElementById('match-mode');
+  sel.value=matchMode;
+  sel.onchange=function(e){ matchMode=e.target.value; localStorage.setItem('matchMode',matchMode); };
 }
 
 // ─── MATCHING ─────────────────────────────────────────
 function matchWord(transcript){
-  var t = transcript.trim();
-  var best = null;
-  var bestLen = 0;
+  var t=transcript.trim();
+  var best=null, bestLen=0, bestIsAlias=false, bestPat='';
   for(var i=0;i<words.length;i++){
-    var w = words[i];
-    var pats = w.patterns || [];
+    var w=words[i];
+    var pats=w.patterns||[];
     for(var j=0;j<pats.length;j++){
-      var pat = pats[j];
-      var hit = false;
-      if(matchMode==='exact'){
-        hit = (t === pat);
-      } else {
-        hit = (t.indexOf(pat) >= 0);
-      }
-      if(hit && pat.length > bestLen){
-        best = w;
-        bestLen = pat.length;
+      var pat=pats[j];
+      var hit=(matchMode==='exact')?(t===pat):(t.indexOf(pat)>=0);
+      if(hit && pat.length>bestLen){
+        best=w; bestLen=pat.length;
+        bestIsAlias=(pat!==w.word);
+        bestPat=pat;
       }
     }
   }
-  return best;
+  if(!best) return null;
+  return { word:best.word, raw:t, matchedPat:bestPat, isAlias:bestIsAlias };
 }
 
 // ─── WEBSOCKET ────────────────────────────────────────
 function connectWS(){
-  var url = document.getElementById('ws-input').value.trim();
+  var url=document.getElementById('ws-input').value.trim();
   if(!url){ flashEl(document.getElementById('ws-input')); return; }
   if(ws) ws.close();
   setStatus('','接続中…');
-  ws = new WebSocket(url);
-  ws.onopen  = function(){ setStatus('on','接続中'); addLog('SYS','接続OK','ok'); localStorage.setItem('ws_url',url); };
-  ws.onclose = function(){ setStatus('','切断'); addLog('SYS','切断','ng'); };
-  ws.onerror = function(){ addLog('SYS','エラー','ng'); };
+  ws=new WebSocket(url);
+  ws.onopen =function(){ setStatus('on','接続中'); addLog({type:'sys',status:'接続OK',ok:true}); localStorage.setItem('ws_url',url); };
+  ws.onclose=function(){ setStatus('','切断');     addLog({type:'sys',status:'切断',ok:false}); };
+  ws.onerror=function(){ addLog({type:'sys',status:'エラー',ok:false}); };
 }
 function setStatus(cls,txt){
-  document.getElementById('status-dot').className = cls;
-  document.getElementById('status-txt').textContent = txt;
+  document.getElementById('status-dot').className=cls;
+  document.getElementById('status-txt').textContent=txt;
 }
-function sendWord(w){
-  if(!ws || ws.readyState!==WebSocket.OPEN){ addLog(w,'未接続','ng'); showFB('⚠ 未接続','var(--danger)'); return; }
-  ws.send(w);
-  addLog(w,'送信OK','ok');
-  showFB('✓  '+w+'  送信','var(--green)');
+
+function sendWord(hitObj){
+  // hitObj: {word, raw, matchedPat, isAlias}
+  if(!ws||ws.readyState!==WebSocket.OPEN){
+    addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:false,status:'未接続'});
+    showFB('⚠ 未接続','var(--danger)');
+    return;
+  }
+  var payload = JSON.stringify({
+    word:       hitObj.word,
+    raw:        hitObj.raw,
+    matched_by: hitObj.isAlias ? 'alias' : 'exact',
+    key:        deviceKey
+  });
+  ws.send(payload);
+  addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:true,status:'送信OK'});
+  if(hitObj.isAlias){
+    showFB('⚠ 誤変換→送信\n認識:「'+hitObj.raw+'」→「'+hitObj.word+'」','var(--warn)');
+  } else {
+    showFB('✓ '+hitObj.word+' 送信','var(--green)');
+  }
 }
 
 // ─── SPEECH ───────────────────────────────────────────
 function recStart(e){
   e.preventDefault();
   if(isRec) return;
-  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){ alert('音声認識非対応\niOS Safariを使ってください'); return; }
-  recog = new SR();
-  recog.lang = 'ja-JP';
-  recog.interimResults = true;
-  recog.maxAlternatives = 3;
-  recog.continuous = true;
-  recog.onstart = function(){
-    isRec=true; lastTxt='';
+  recog=new SR();
+  recog.lang='ja-JP';
+  recog.interimResults=true;
+  recog.maxAlternatives=3;
+  recog.continuous=true;
+  recog.onstart=function(){
+    isRec=true; lastTxt=''; lastHit=null;
     document.getElementById('mic-btn').classList.add('rec');
     document.getElementById('waveform').classList.add('active');
     document.getElementById('transcript-box').classList.add('active');
@@ -503,19 +568,24 @@ function recStart(e){
     document.getElementById('mic-icon').textContent='⏹';
     setTxt('','interim');
   };
-  recog.onresult = function(ev){
-    var interim='', final='';
+  recog.onresult=function(ev){
+    var interim='',final='';
     for(var i=ev.resultIndex;i<ev.results.length;i++){
       var t=ev.results[i][0].transcript;
       if(ev.results[i].isFinal) final+=t; else interim+=t;
     }
-    var cur = (final||interim).trim();
+    var cur=(final||interim).trim();
     if(cur) lastTxt=cur;
-    var hit = matchWord(cur);
-    setTxt(cur, hit?'matched':'interim');
+    var hit=matchWord(cur);
+    lastHit=hit;
+    if(hit){
+      setTxt(hit.word, hit.isAlias?'alias':'matched');
+    } else {
+      setTxt(cur,'interim');
+    }
   };
-  recog.onerror = function(ev){ addLog('MIC',ev.error,'ng'); };
-  recog.onend   = function(){ if(isRec) stopAndJudge(); };
+  recog.onerror=function(ev){ addLog({type:'sys',status:'MIC:'+ev.error,ok:false}); };
+  recog.onend  =function(){ if(isRec) stopAndJudge(); };
   recog.start();
 }
 
@@ -534,47 +604,75 @@ function stopAndJudge(){
   document.getElementById('mic-lbl').textContent='HOLD';
   document.getElementById('mic-icon').textContent='🎤';
   if(!lastTxt){ setTxt('',''); return; }
-  var hit = matchWord(lastTxt);
+  var hit=lastHit||matchWord(lastTxt);
   if(hit){
-    setTxt(hit.word,'matched');
-    sendWord(hit.word);
+    setTxt(hit.word, hit.isAlias?'alias':'matched');
+    sendWord(hit);
   } else {
     setTxt(lastTxt,'nomatch');
     showFB('✗ 一致なし — ワードタブでパターン追加できます','var(--danger)');
-    addLog(lastTxt,'不一致','ng');
+    addLog({type:'send',word:lastTxt,raw:lastTxt,isAlias:false,ok:false,status:'不一致'});
   }
 }
 
 function setTxt(t,mode){
-  var el = document.getElementById('transcript-txt');
+  var el=document.getElementById('transcript-txt');
   el.className='';
   if(!t){ el.textContent='長押しで録音開始'; el.classList.add('ph'); }
   else  { el.textContent=t; if(mode) el.classList.add(mode); }
 }
 
+// ─── LOG ──────────────────────────────────────────────
+function addLog(opt){
+  // opt: {type:'sys'|'send', word, raw, isAlias, ok, status}
+  var log=document.getElementById('log');
+  var now=new Date();
+  var t=pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+
+  var row=document.createElement('div');
+
+  if(opt.type==='sys'){
+    row.className='log-row '+(opt.ok?'ok':'ng');
+    row.innerHTML='<div class="log-main">'
+      +'<span class="lt">'+t+'</span>'
+      +'<span class="lw '+(opt.ok?'ok':'ng')+'">SYSTEM</span>'
+      +'<span class="ls '+(opt.ok?'ok':'ng')+'" style="margin-left:auto;">'+esc(opt.status)+'</span>'
+      +'</div>';
+  } else {
+    // send log
+    var cls = !opt.ok ? 'ng' : (opt.isAlias ? 'alias' : 'ok');
+    var icon = !opt.ok ? '✗' : (opt.isAlias ? '⚠' : '✓');
+    var sub = '';
+    if(opt.isAlias && opt.ok){
+      sub = '<div class="log-sub">認識: <span class="raw">「'+esc(opt.raw)+'」</span> → 送信: 「'+esc(opt.word)+'」</div>';
+    } else if(!opt.ok && opt.status==='不一致'){
+      sub = '<div class="log-sub">「'+esc(opt.raw)+'」はワードリストに未登録</div>';
+    }
+    row.className='log-row '+cls;
+    row.innerHTML='<div class="log-main">'
+      +'<span class="lt">'+t+'</span>'
+      +'<span class="lw '+cls+'">'+icon+' '+esc(opt.word)+'</span>'
+      +'<span class="ls '+cls+'" style="margin-left:auto;">'+esc(opt.status)+'</span>'
+      +'</div>'+sub;
+  }
+
+  log.insertBefore(row,log.firstChild);
+  while(log.children.length>30) log.removeChild(log.lastChild);
+}
+
 // ─── UI HELPERS ───────────────────────────────────────
 function showFB(msg,color){
-  var el = document.getElementById('feedback');
+  var el=document.getElementById('feedback');
   el.textContent=msg; el.style.color=color; el.classList.add('show');
   clearTimeout(el._t);
-  el._t = setTimeout(function(){ el.classList.remove('show'); }, 2500);
-}
-function addLog(word,status,type){
-  var log = document.getElementById('log');
-  var now = new Date();
-  var t = pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
-  var row = document.createElement('div');
-  row.className='log-row';
-  row.innerHTML='<span class="lt">'+t+'</span><span class="lw">'+esc(word)+'</span><span class="ls-'+type+'">'+esc(status)+'</span>';
-  log.insertBefore(row, log.firstChild);
-  while(log.children.length>25) log.removeChild(log.lastChild);
+  el._t=setTimeout(function(){ el.classList.remove('show'); },2800);
 }
 
 // ─── INIT ─────────────────────────────────────────────
-window.onload = function(){
-  var s = localStorage.getItem('ws_url');
+window.onload=function(){
+  var s=localStorage.getItem('ws_url');
   if(s) document.getElementById('ws-input').value=s;
-  document.getElementById('new-word').addEventListener('keydown', function(e){
+  document.getElementById('new-word').addEventListener('keydown',function(e){
     if(e.key==='Enter') addWord();
   });
 };
