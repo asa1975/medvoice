@@ -4,153 +4,217 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="MedVoice">
 <title>MedVoice Remote</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Zen+Kaku+Gothic+New:wght@300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;600&family=Noto+Sans+JP:wght@400;700;900&display=swap');
 :root {
-  --bg:#080c10;--s1:#0e1318;--s2:#141b22;--border:#1e2830;
-  --accent:#0af0c0;--warn:#f0a80a;--danger:#f04040;
-  --text:#d8e4ec;--muted:#4a5a68;--green:#0af0a0;
-  --mono:'DM Mono',monospace;--sans:'Zen Kaku Gothic New',sans-serif;
+  --bg:#f4f6f9;--white:#fff;--border:#dde2ea;--border2:#c8d0dc;
+  --accent:#0066ff;--accent-l:#e8f0ff;
+  --warn:#e67700;--warn-l:#fff3e0;
+  --danger:#d32f2f;--danger-l:#ffebee;
+  --green:#1a8a3c;--green-l:#e8f5e9;
+  --text:#111827;--text2:#4b5563;--text3:#9ca3af;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans JP',sans-serif;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh;}
 
-.tab-bar{display:flex;background:var(--s1);border-bottom:1px solid var(--border);padding-top:env(safe-area-inset-top,0px);flex-shrink:0;}
-.tab-btn{flex:1;background:none;border:none;color:var(--muted);font-family:var(--mono);font-size:11px;letter-spacing:.1em;padding:14px 0 12px;cursor:pointer;border-bottom:2px solid transparent;transition:color .2s,border-color .2s;text-transform:uppercase;}
+.tab-bar{display:flex;background:var(--white);border-bottom:2px solid var(--border);padding-top:env(safe-area-inset-top,0px);flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.tab-btn{flex:1;background:none;border:none;color:var(--text3);font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.04em;padding:14px 0 12px;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
 
-.page{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:18px 16px env(safe-area-inset-bottom,20px);}
-.page.active{display:flex;flex-direction:column;gap:18px;}
+.page{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 14px env(safe-area-inset-bottom,20px);}
+.page.active{display:flex;flex-direction:column;gap:14px;}
 
-.card{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;}
-.card-label{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.card-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
 
 .conn-row{display:flex;gap:8px;align-items:center;}
-.conn-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:12px;padding:9px 12px;outline:none;transition:border-color .2s;}
+.conn-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;outline:none;transition:border-color .2s;}
 .conn-input:focus{border-color:var(--accent);}
-.btn-sm{background:var(--accent);color:#000;border:none;border-radius:8px;font-family:var(--mono);font-size:11px;font-weight:500;padding:9px 14px;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
-.btn-sm:active{opacity:.7;}
-.conn-status{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px;}
-#status-dot{width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 6px var(--danger);flex-shrink:0;transition:background .3s,box-shadow .3s;}
-#status-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2.5s infinite;}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:13px;font-weight:700;padding:10px 16px;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
+.btn-primary:active{opacity:.75;}
+.conn-status{display:flex;align-items:center;gap:8px;margin-top:10px;}
+#status-dot{width:10px;height:10px;border-radius:50%;background:var(--danger);flex-shrink:0;transition:background .3s;}
+#status-dot.on{background:var(--green);animation:blink 2.5s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
+#status-txt{font-family:var(--mono);font-size:12px;color:var(--text2);}
 
-#transcript-box{min-height:80px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-#transcript-box::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:0;transition:opacity .3s;}
-#transcript-box.active::after{opacity:1;animation:scan 1.4s linear infinite;}
-@keyframes scan{from{transform:translateX(-100%);}to{transform:translateX(100%);}}
-#transcript-txt{font-size:26px;font-weight:900;text-align:center;word-break:break-all;line-height:1.2;transition:color .2s;}
-#transcript-txt.ph{font-size:14px;font-weight:300;color:var(--muted);}
-#transcript-txt.interim{color:var(--accent);}
-#transcript-txt.matched{color:var(--green);}
-#transcript-txt.alias{color:var(--warn);}
-#transcript-txt.nomatch{color:var(--danger);}
+/* AUTO OVERLAY */
+#auto-overlay{display:none;position:fixed;inset:0;z-index:100;background:#fff;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px;}
+#auto-overlay.show{display:flex;}
+#countdown-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;}
+#countdown-num{font-size:96px;font-weight:900;line-height:1;color:var(--accent);animation:pop .4s ease-out;}
+@keyframes pop{from{transform:scale(1.4);opacity:.4;}to{transform:scale(1);opacity:1;}}
+#countdown-label{font-size:16px;color:var(--text3);font-weight:700;letter-spacing:.06em;}
+#auto-rec-wrap{display:none;flex-direction:column;align-items:center;gap:20px;width:100%;}
+#auto-rec-wrap.show{display:flex;}
+#auto-status-badge{font-size:13px;font-weight:700;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:6px 18px;border-radius:20px;}
+#auto-status-badge.listening{background:var(--accent-l);color:var(--accent);}
+#auto-status-badge.matched  {background:var(--green-l);color:var(--green);}
+#auto-status-badge.alias    {background:var(--warn-l);color:var(--warn);}
+#auto-status-badge.nomatch  {background:var(--danger-l);color:var(--danger);}
+#auto-status-badge.filtered {background:var(--bg);color:var(--text3);border:1px solid var(--border2);}
+#auto-transcript{font-size:32px;font-weight:900;text-align:center;word-break:break-all;line-height:1.3;min-height:48px;color:var(--text);transition:color .2s;}
+#auto-transcript.interim{color:var(--accent);}
+#auto-transcript.matched{color:var(--green);}
+#auto-transcript.alias  {color:var(--warn);}
+#auto-transcript.nomatch{color:var(--danger);}
+#auto-transcript.filtered{color:var(--text3);font-size:16px;font-weight:400;}
+#auto-transcript.ph     {color:var(--text3);font-size:16px;font-weight:400;}
+#auto-wave{display:flex;align-items:center;justify-content:center;gap:5px;height:40px;}
+.aw{width:5px;background:var(--accent);border-radius:4px;animation:awv 1s ease-in-out infinite;}
+.aw:nth-child(1){animation-delay:0s;}.aw:nth-child(2){animation-delay:.1s;}.aw:nth-child(3){animation-delay:.2s;}
+.aw:nth-child(4){animation-delay:.3s;}.aw:nth-child(5){animation-delay:.2s;}.aw:nth-child(6){animation-delay:.1s;}.aw:nth-child(7){animation-delay:0s;}
+@keyframes awv{0%,100%{height:5px;}50%{height:34px;}}
+#auto-sent-banner{width:100%;padding:14px;border-radius:12px;text-align:center;font-size:16px;font-weight:700;opacity:0;transition:opacity .3s;line-height:1.5;}
+#auto-sent-banner.show{opacity:1;}
+#auto-sent-banner.ok  {background:var(--green-l);color:var(--green);}
+#auto-sent-banner.warn{background:var(--warn-l);color:var(--warn);}
+#auto-sent-banner.ng  {background:var(--danger-l);color:var(--danger);}
+#auto-stop-btn{margin-top:8px;background:var(--danger);color:#fff;border:none;border-radius:12px;font-family:var(--sans);font-size:15px;font-weight:700;padding:14px 36px;cursor:pointer;}
+#auto-stop-btn:active{opacity:.75;}
 
-#waveform{display:flex;align-items:center;justify-content:center;gap:4px;height:36px;opacity:0;transition:opacity .3s;}
+/* TRANSCRIPT */
+#transcript-box{min-height:90px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-radius:14px;background:var(--white);border:2px solid var(--border);transition:border-color .3s,background .3s;}
+#transcript-box.active      {border-color:var(--accent);}
+#transcript-box.state-matched{border-color:var(--green);background:var(--green-l);}
+#transcript-box.state-alias  {border-color:var(--warn); background:var(--warn-l);}
+#transcript-box.state-nomatch{border-color:var(--danger);background:var(--danger-l);}
+#transcript-box.state-filtered{border-color:var(--border2);background:var(--bg);}
+#transcript-txt{font-size:28px;font-weight:900;text-align:center;word-break:break-all;line-height:1.2;padding:0 12px;transition:color .2s;color:var(--text3);}
+#transcript-txt.ph      {font-size:14px;font-weight:400;color:var(--text3);}
+#transcript-txt.interim {color:var(--accent);}
+#transcript-txt.matched {color:var(--green);}
+#transcript-txt.alias   {color:var(--warn);}
+#transcript-txt.nomatch {color:var(--danger);}
+#transcript-txt.filtered{font-size:14px;color:var(--text3);}
+
+#waveform{display:flex;align-items:center;justify-content:center;gap:5px;height:32px;opacity:0;transition:opacity .3s;}
 #waveform.active{opacity:1;}
-.wbar{width:3px;background:var(--accent);border-radius:3px;animation:wv 1s ease-in-out infinite;}
-.wbar:nth-child(1){animation-delay:0s;}.wbar:nth-child(2){animation-delay:.09s;}.wbar:nth-child(3){animation-delay:.18s;}
-.wbar:nth-child(4){animation-delay:.27s;}.wbar:nth-child(5){animation-delay:.18s;}.wbar:nth-child(6){animation-delay:.09s;}.wbar:nth-child(7){animation-delay:0s;}
-@keyframes wv{0%,100%{height:5px;}50%{height:30px;}}
+.wbar{width:4px;background:var(--accent);border-radius:4px;animation:wv 1s ease-in-out infinite;}
+.wbar:nth-child(1){animation-delay:0s;}.wbar:nth-child(2){animation-delay:.1s;}.wbar:nth-child(3){animation-delay:.2s;}
+.wbar:nth-child(4){animation-delay:.3s;}.wbar:nth-child(5){animation-delay:.2s;}.wbar:nth-child(6){animation-delay:.1s;}.wbar:nth-child(7){animation-delay:0s;}
+@keyframes wv{0%,100%{height:4px;}50%{height:26px;}}
 
 .mic-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
-#mic-btn{width:110px;height:110px;border-radius:50%;border:none;background:var(--s2);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;position:relative;-webkit-user-select:none;user-select:none;transition:transform .1s;}
-#mic-btn::before{content:'';position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(var(--accent),#0a6050,var(--accent));opacity:.35;transition:opacity .3s,inset .3s;}
-#mic-btn::after{content:'';position:absolute;inset:2px;border-radius:50%;background:var(--s2);}
-#mic-btn .inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:2px;}
-#mic-icon{font-size:36px;line-height:1;}
-#mic-lbl{font-family:var(--mono);font-size:9px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;}
-#mic-btn.rec::before{opacity:1;inset:-6px;background:conic-gradient(var(--danger),#800,var(--danger));animation:rspin 1.5s linear infinite;}
-@keyframes rspin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+#mic-btn{width:120px;height:120px;border-radius:50%;border:3px solid var(--border2);background:var(--white);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;-webkit-user-select:none;user-select:none;transition:transform .1s,border-color .2s,box-shadow .2s;box-shadow:0 4px 16px rgba(0,0,0,.10);}
+#mic-btn.rec{border-color:var(--danger);animation:pulse-rec 1.2s infinite;}
+@keyframes pulse-rec{0%,100%{box-shadow:0 0 0 6px rgba(211,47,47,.15),0 4px 16px rgba(0,0,0,.12);}50%{box-shadow:0 0 0 14px rgba(211,47,47,.07),0 4px 16px rgba(0,0,0,.12);}}
 #mic-btn:active{transform:scale(.93);}
-.mic-hint{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em;}
-#feedback{font-family:var(--mono);font-size:12px;letter-spacing:.06em;min-height:18px;text-align:center;opacity:0;transition:opacity .25s;line-height:1.4;}
-#feedback.show{opacity:1;}
+#mic-icon{font-size:40px;line-height:1;}
+#mic-lbl{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
+#mic-btn.rec #mic-lbl{color:var(--danger);}
+.mic-hint{font-size:12px;color:var(--text3);text-align:center;line-height:1.5;}
 
-/* LOG */
-#log{display:flex;flex-direction:column;gap:6px;}
-.log-row{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border-radius:8px;animation:fi .3s forwards;opacity:0;}
+#feedback{min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:700;text-align:center;opacity:0;transition:opacity .25s;line-height:1.4;}
+#feedback.show{opacity:1;}
+#feedback.fb-ok    {background:var(--green-l);color:var(--green);}
+#feedback.fb-warn  {background:var(--warn-l);color:var(--warn);}
+#feedback.fb-danger{background:var(--danger-l);color:var(--danger);}
+#feedback.fb-info  {background:var(--accent-l);color:var(--accent);}
+
+#log{display:flex;flex-direction:column;gap:8px;}
+.log-row{border-radius:10px;padding:10px 12px;animation:fi .25s forwards;opacity:0;border-left:4px solid transparent;}
 @keyframes fi{to{opacity:1;}}
-.log-row.ok  {background:rgba(10,240,160,.07);border:1px solid rgba(10,240,160,.15);}
-.log-row.alias{background:rgba(240,168,10,.07);border:1px solid rgba(240,168,10,.20);}
-.log-row.ng  {background:rgba(240,64,64,.07); border:1px solid rgba(240,64,64,.15);}
+.log-row.ok      {background:var(--green-l); border-left-color:var(--green);}
+.log-row.alias   {background:var(--warn-l);  border-left-color:var(--warn);}
+.log-row.ng      {background:var(--danger-l);border-left-color:var(--danger);}
+.log-row.sys     {background:var(--bg);      border-left-color:var(--border2);}
+.log-row.filtered{background:var(--bg);      border-left-color:var(--border2);}
 .log-main{display:flex;align-items:center;gap:8px;}
-.lt{font-family:var(--mono);font-size:10px;color:var(--muted);flex-shrink:0;}
-.lw{font-size:14px;font-weight:700;}
-.lw.ok   {color:var(--green);}
-.lw.alias{color:var(--warn);}
-.lw.ng   {color:var(--danger);}
-.ls{font-family:var(--mono);font-size:10px;margin-left:auto;flex-shrink:0;}
-.ls.ok   {color:var(--green);}
-.ls.alias{color:var(--warn);}
-.ls.ng   {color:var(--danger);}
-.log-sub{font-family:var(--mono);font-size:10px;color:var(--muted);padding-left:2px;}
-.log-sub .raw{color:var(--warn);}
+.lt{font-family:var(--mono);font-size:11px;color:var(--text3);flex-shrink:0;}
+.lw{font-size:15px;font-weight:900;}
+.lw.ok{color:var(--green);}.lw.alias{color:var(--warn);}.lw.ng{color:var(--danger);}.lw.sys,.lw.filtered{color:var(--text2);}
+.ls{font-family:var(--mono);font-size:11px;margin-left:auto;flex-shrink:0;font-weight:600;}
+.ls.ok{color:var(--green);}.ls.alias{color:var(--warn);}.ls.ng{color:var(--danger);}.ls.sys,.ls.filtered{color:var(--text3);}
+.log-sub{font-size:12px;color:var(--text2);margin-top:3px;}
+.log-sub .raw{color:var(--warn);font-weight:700;}
 
 /* WORD CARDS */
-.word-card{background:var(--s1);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:10px;}
-.word-card-header{display:flex;align-items:center;gap:10px;padding:14px 14px 14px 16px;cursor:pointer;}
-.wch-name{flex:1;font-size:17px;font-weight:900;letter-spacing:.04em;}
-.cat-badge{font-family:var(--mono);font-size:9px;letter-spacing:.1em;color:#000;border-radius:4px;padding:2px 7px;background:var(--accent);text-transform:uppercase;flex-shrink:0;}
-.cat-badge.rec{background:var(--warn);}
-.del-word-btn{background:none;border:none;color:var(--muted);font-size:17px;cursor:pointer;padding:2px 4px;flex-shrink:0;}
+.word-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.word-card-header{display:flex;align-items:center;gap:10px;padding:14px 12px 14px 14px;cursor:pointer;}
+.wch-name{flex:1;font-size:17px;font-weight:900;color:var(--text);}
+.cat-badge{font-family:var(--mono);font-size:10px;font-weight:600;border-radius:6px;padding:3px 8px;text-transform:uppercase;flex-shrink:0;}
+.cat-badge.med{background:var(--accent-l);color:var(--accent);}
+.cat-badge.rec{background:var(--warn-l);color:var(--warn);}
+.del-word-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;}
 .del-word-btn:active{color:var(--danger);}
-.toggle-icon{color:var(--muted);font-size:13px;flex-shrink:0;transition:transform .2s;}
+.toggle-icon{color:var(--text3);font-size:14px;flex-shrink:0;transition:transform .2s;}
 .toggle-icon.open{transform:rotate(180deg);}
-.pattern-area{display:none;border-top:1px solid var(--border);padding:12px 14px;background:var(--s2);}
+.pattern-area{display:none;border-top:1.5px solid var(--border);padding:12px 14px;background:var(--bg);}
 .pattern-area.open{display:block;}
-.pattern-label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+.pattern-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
 .pattern-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:10px;}
-.pattern-chip{display:flex;align-items:center;gap:5px;background:var(--bg);border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 12px;font-size:13px;}
-.main-chip{color:var(--accent);font-family:var(--mono);font-size:10px;}
-.del-pat-btn{background:none;border:none;color:var(--muted);font-size:14px;cursor:pointer;padding:0 2px;line-height:1;}
+.pattern-chip{display:flex;align-items:center;gap:5px;background:var(--white);border:1.5px solid var(--border2);border-radius:20px;padding:5px 10px 5px 12px;font-size:13px;font-weight:700;color:var(--text);}
+.main-chip{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--accent);background:var(--accent-l);border-radius:4px;padding:1px 5px;margin-right:2px;}
+.del-pat-btn{background:none;border:none;color:var(--text3);font-size:15px;cursor:pointer;padding:0 2px;line-height:1;}
 .del-pat-btn:active{color:var(--danger);}
 .pattern-add-row{display:flex;gap:8px;}
-.pattern-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:8px 10px;outline:none;transition:border-color .2s;}
+.pattern-input{flex:1;background:var(--white);border:1.5px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 10px;outline:none;transition:border-color .2s;}
 .pattern-input:focus{border-color:var(--accent);}
-.btn-xs{background:var(--accent);color:#000;border:none;border-radius:8px;font-family:var(--mono);font-size:11px;font-weight:500;padding:8px 12px;cursor:pointer;white-space:nowrap;}
-.btn-xs:active{opacity:.7;}
-
-.add-word-form{background:var(--s1);border:1px solid var(--border);border-radius:14px;padding:16px;}
-.add-row{display:flex;gap:8px;margin-bottom:8px;}
-.add-row input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:15px;padding:10px 12px;outline:none;transition:border-color .2s;}
+.btn-xs{background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:12px;font-weight:700;padding:9px 14px;cursor:pointer;}
+.btn-xs:active{opacity:.75;}
+.add-word-form{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.add-row{display:flex;gap:8px;margin-bottom:10px;}
+.add-row input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:16px;font-weight:700;padding:11px 12px;outline:none;transition:border-color .2s;}
 .add-row input:focus{border-color:var(--accent);}
-.cat-select{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:10px 8px;outline:none;}
-.btn-full{width:100%;background:var(--accent);color:#000;border:none;border-radius:10px;font-family:var(--mono);font-size:13px;font-weight:500;padding:13px;cursor:pointer;letter-spacing:.06em;transition:opacity .2s;margin-bottom:8px;display:block;}
-.btn-full:active{opacity:.7;}
-.btn-full.danger{background:var(--danger);color:#fff;}
-.btn-full.outline{background:none;border:1px solid var(--border);color:var(--muted);}
-.section-title{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
-.empty-note{font-size:13px;color:var(--muted);text-align:center;padding:16px;}
+.cat-select{background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-size:16px;padding:11px 10px;outline:none;}
+.btn-full{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:700;padding:13px;cursor:pointer;transition:opacity .2s;margin-bottom:8px;display:block;}
+.btn-full:active{opacity:.75;}
+.btn-full.danger{background:var(--danger);}
+.btn-full.outline{background:none;border:1.5px solid var(--border2);color:var(--text2);}
+.section-title{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
+.empty-note{font-size:13px;color:var(--text3);text-align:center;padding:20px;}
 
 /* SETTINGS */
-.setting-row{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.setting-row label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;}
-.setting-row input,.setting-row select{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;outline:none;width:100%;transition:border-color .2s;}
-.setting-row input:focus{border-color:var(--accent);}
-.key-row{display:flex;gap:8px;}
-.key-row input{flex:1;}
-.info-box{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12px;line-height:1.9;color:var(--muted);}
-.info-box b{color:var(--accent);}
-.info-box code{color:var(--text);background:var(--bg);padding:1px 5px;border-radius:4px;}
-.key-display{
-  background:var(--bg);border:1px solid var(--border);border-radius:8px;
-  padding:10px 12px;font-family:var(--mono);font-size:12px;
-  color:var(--accent);word-break:break-all;letter-spacing:.05em;
-  margin-top:8px;
-}
-.badge-auth{
-  display:inline-block;background:rgba(10,240,160,.15);border:1px solid rgba(10,240,160,.3);
-  color:var(--green);font-family:var(--mono);font-size:10px;
-  border-radius:4px;padding:2px 8px;letter-spacing:.08em;
-}
+.setting-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
+.setting-row label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;}
+.setting-row select,.setting-row input[type=range]{background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--mono);font-size:13px;padding:11px 12px;outline:none;width:100%;transition:border-color .2s;}
+.setting-row input[type=range]{padding:8px 12px;cursor:pointer;accent-color:var(--accent);}
+.range-row{display:flex;align-items:center;gap:10px;}
+.range-row input{flex:1;}
+.range-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--accent);min-width:36px;text-align:right;}
+.info-box{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:14px;font-family:var(--mono);font-size:12px;line-height:2;color:var(--text2);}
+.info-box b{color:var(--accent);font-weight:700;}
+.info-box code{color:var(--text);background:var(--white);border:1px solid var(--border2);padding:1px 6px;border-radius:4px;}
+.key-display{background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12px;color:var(--accent);word-break:break-all;letter-spacing:.04em;margin-top:8px;font-weight:600;}
+.key-btns{display:flex;gap:8px;margin-top:10px;}
+.key-btns .btn-full{margin:0;flex:1;}
+
+/* AUTO BANNER */
+#auto-banner{background:var(--accent);color:#fff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;cursor:pointer;}
+#auto-banner .ab-hint{font-size:11px;font-weight:400;opacity:.8;}
+
+/* 感度インジケーター */
+.sens-bar{display:flex;gap:3px;align-items:center;margin-top:6px;}
+.sens-seg{height:8px;flex:1;border-radius:3px;background:var(--border);}
+.sens-seg.on{background:var(--accent);}
+.sens-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:3px;}
 </style>
 </head>
 <body>
+
+<!-- AUTO OVERLAY -->
+<div id="auto-overlay">
+  <div id="countdown-wrap">
+    <div id="countdown-num">1</div>
+    <div id="countdown-label">録音開始まで…</div>
+  </div>
+  <div id="auto-rec-wrap">
+    <div id="auto-status-badge" class="listening">● 聞き取り中</div>
+    <div id="auto-wave">
+      <div class="aw"></div><div class="aw"></div><div class="aw"></div>
+      <div class="aw"></div><div class="aw"></div><div class="aw"></div><div class="aw"></div>
+    </div>
+    <div id="auto-transcript" class="ph">話してください…</div>
+    <div id="auto-sent-banner"></div>
+  </div>
+  <button id="auto-stop-btn" onclick="stopAutoMode()">■ 停止</button>
+</div>
 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="showTab('home')">🎤 音声</button>
@@ -163,8 +227,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
   <div class="card">
     <div class="card-label">接続先</div>
     <div class="conn-row">
-      <input class="conn-input" id="ws-input" type="text" placeholder="wss://xxxx.ngrok-free.app" autocomplete="off" autocorrect="off" spellcheck="false">
-      <button class="btn-sm" onclick="connectWS()">接続</button>
+      <input class="conn-input" id="ws-input" type="text" placeholder="ws://192.168.x.x:8765" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="btn-primary" onclick="connectWS()">接続</button>
     </div>
     <div class="conn-status">
       <div id="status-dot"></div>
@@ -172,32 +236,31 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
     </div>
   </div>
 
-  <div class="card" id="transcript-box">
+  <div id="auto-banner" onclick="startAutoMode()">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span>⚡ オートモード起動</span>
+      <span class="ab-hint">Siriショートカット用</span>
+    </div>
+    <span>▶</span>
+  </div>
+
+  <div id="transcript-box">
     <span id="transcript-txt" class="ph">長押しで録音開始</span>
   </div>
-
   <div id="waveform">
     <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
-    <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
-    <div class="wbar"></div>
+    <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
   </div>
-
   <div class="mic-wrap">
     <button id="mic-btn"
-      onpointerdown="recStart(event)"
-      onpointerup="recStop(event)"
-      onpointerleave="recStop(event)"
-      oncontextmenu="return false">
-      <div class="inner">
-        <span id="mic-icon">🎤</span>
-        <span id="mic-lbl">HOLD</span>
-      </div>
+      onpointerdown="recStart(event)" onpointerup="recStop(event)"
+      onpointerleave="recStop(event)" oncontextmenu="return false">
+      <span id="mic-icon">🎤</span>
+      <span id="mic-lbl">HOLD</span>
     </button>
-    <div class="mic-hint">長押しで録音 / 離すと判定・送信</div>
+    <div class="mic-hint">長押しで録音<br>離すと判定・送信</div>
   </div>
-
   <div id="feedback"></div>
-
   <div class="card">
     <div class="card-label">送信ログ</div>
     <div id="log"></div>
@@ -209,7 +272,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
   <div class="add-word-form">
     <div class="card-label">ワード追加</div>
     <div class="add-row">
-      <input id="new-word" type="text" placeholder="送信ワード例：挿管" maxlength="30">
+      <input id="new-word" type="text" placeholder="送信するワード（例：挿管）" maxlength="30">
       <select class="cat-select" id="new-cat">
         <option value="med">🏥</option>
         <option value="rec">📝</option>
@@ -217,30 +280,80 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
     </div>
     <button class="btn-full" onclick="addWord()">＋ 追加</button>
   </div>
-  <div>
-    <div class="section-title">🏥 医療ワード</div>
-    <div id="list-med"></div>
-  </div>
-  <div>
-    <div class="section-title">📝 記録ワード</div>
-    <div id="list-rec"></div>
-  </div>
+  <div><div class="section-title">🏥 医療ワード</div><div id="list-med"></div></div>
+  <div><div class="section-title">📝 記録ワード</div><div id="list-rec"></div></div>
 </div>
 
 <!-- SETTINGS -->
 <div id="page-settings" class="page">
 
+  <!-- 認識感度 -->
+  <div class="card">
+    <div class="card-label">🎚 認識感度</div>
+
+    <div class="setting-row">
+      <label>雑音フィルター（最短文字数）</label>
+      <div class="range-row">
+        <input type="range" id="min-chars" min="1" max="8" step="1" value="2"
+          oninput="updateRangeVal('min-chars','min-chars-val','文字以上')">
+        <span class="range-val" id="min-chars-val">2文字以上</span>
+      </div>
+      <div class="sens-bar" id="sens-bar-noise"></div>
+      <div class="sens-label"><span>雑音を通しやすい</span><span>雑音を通しにくい</span></div>
+    </div>
+
+    <div class="setting-row">
+      <label>認識タイムアウト（無音で次へ移る秒数）</label>
+      <div class="range-row">
+        <input type="range" id="rec-timeout" min="1" max="8" step="1" value="4"
+          oninput="updateRangeVal('rec-timeout','rec-timeout-val','秒')">
+        <span class="range-val" id="rec-timeout-val">4秒</span>
+      </div>
+      <div class="sens-bar" id="sens-bar-timeout"></div>
+      <div class="sens-label"><span>素早く次へ</span><span>じっくり待つ</span></div>
+    </div>
+
+    <div class="info-box" style="margin-top:4px;">
+      <b>雑音が多い環境</b> → 最短文字数を増やす（3〜5文字）<br>
+      <b>小声で使う</b> → 最短文字数を減らす（1〜2文字）<br>
+      <b>ゆっくり話す</b> → タイムアウトを長くする
+    </div>
+  </div>
+
   <!-- デバイスキー -->
   <div class="card">
     <div class="card-label">🔑 デバイス認証キー</div>
-    <div class="info-box" style="margin-bottom:12px;">
-      このキーをラズパイ側の <code>DEVICE_KEY</code> に設定してください。<br>
-      キーが一致しないスマホからの送信は<b>拒否</b>されます。
+    <div class="info-box" style="margin-bottom:10px;">
+      このキーをラズパイの <code>DEVICE_KEY</code> に設定してください。<br>
+      キーが一致しない端末からの送信は<b>拒否</b>されます。
     </div>
-    <div class="key-display" id="key-display">-</div>
-    <div style="display:flex;gap:8px;margin-top:10px;">
-      <button class="btn-full" style="margin:0;" onclick="regenKey()">🔄 キーを再生成</button>
-      <button class="btn-full outline" style="margin:0;" onclick="copyKey()">📋 コピー</button>
+    <div class="key-display" id="key-display">読込中...</div>
+    <div class="key-btns">
+      <button class="btn-full" onclick="regenKey()">🔄 再生成</button>
+      <button class="btn-full outline" onclick="copyKey()">📋 コピー</button>
+    </div>
+  </div>
+
+  <!-- オートモード -->
+  <div class="card">
+    <div class="card-label">⚡ オートモード設定</div>
+    <div class="info-box" style="margin-bottom:10px;">
+      URLに <code>?auto=1</code> を付けて開くと自動起動します。
+    </div>
+    <div class="setting-row">
+      <label>送信後の待機時間</label>
+      <select id="auto-wait">
+        <option value="800">0.8秒（速い）</option>
+        <option value="1500" selected>1.5秒（標準）</option>
+        <option value="2500">2.5秒（ゆっくり）</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <label>ビープ音</label>
+      <select id="beep-mode">
+        <option value="on" selected>オン</option>
+        <option value="off">オフ</option>
+      </select>
     </div>
   </div>
 
@@ -248,20 +361,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
   <div class="card">
     <div class="card-label">接続方法</div>
     <div class="info-box">
-      <b>同一Wi-Fi</b><br>
-      <code>ws://ラズパイIP:8765</code><br><br>
+      <b>同一Wi-Fi</b><br><code>ws://ラズパイIP:8765</code><br><br>
       <b>外出先（ngrok TCP）</b><br>
-      <code>ngrok tcp 8765</code><br>
-      → <code>ws://x.tcp.ngrok.io:XXXXX</code><br><br>
-      <b>HTTPS環境（ngrok HTTP）</b><br>
-      <code>ngrok http 8765</code><br>
-      → <code>wss://xxx.ngrok-free.app</code>
+      ラズパイで: <code>ngrok tcp 8765</code><br>
+      アプリに: <code>ws://x.tcp.ngrok.io:XXXXX</code><br><br>
+      <b>HTTPS経由</b><br>
+      ラズパイで: <code>ngrok http 8765</code><br>
+      アプリに: <code>wss://xxx.ngrok-free.app</code>
     </div>
   </div>
 
   <!-- マッチング -->
   <div class="card">
-    <div class="card-label">マッチング</div>
+    <div class="card-label">マッチング設定</div>
     <div class="setting-row">
       <label>一致モード</label>
       <select id="match-mode">
@@ -271,10 +383,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
     </div>
   </div>
 
-  <!-- データ管理 -->
+  <!-- データ -->
   <div class="card">
     <div class="card-label">データ管理</div>
-    <button class="btn-full" onclick="exportData()">💾 エクスポート</button>
+    <button class="btn-full" onclick="exportData()">💾 ワードをエクスポート</button>
     <button class="btn-full outline" onclick="importClick()">📂 インポート</button>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
     <button class="btn-full danger" onclick="resetWords()">🗑 デフォルトに戻す</button>
@@ -282,11 +394,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 
   <div class="card">
     <div class="card-label">アプリ情報</div>
-    <div class="info-box">
-      <b>MedVoice Remote v4.0</b><br>
-      音声認識 → パターンマッチ → 認証付き送信<br><br>
-      Safari → 共有 → ホーム画面に追加
-    </div>
+    <div class="info-box"><b>MedVoice Remote v7.0</b><br>Safari → 共有 → ホーム画面に追加</div>
   </div>
 </div>
 
@@ -297,29 +405,73 @@ function pad(n){ return String(n).padStart(2,'0'); }
 function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 function flashEl(el){ el.style.borderColor='var(--danger)'; setTimeout(function(){ el.style.borderColor=''; },1200); }
 
+// ─── SETTINGS VALUES ──────────────────────────────────
+function getSetting(key, def){ return localStorage.getItem(key) || def; }
+function setSetting(key, val){ localStorage.setItem(key, val); }
+
+function getMinChars()   { return parseInt(getSetting('min_chars','2')); }
+function getRecTimeout() { return parseInt(getSetting('rec_timeout','4')); }
+
+function updateRangeVal(id, valId, suffix){
+  var v = document.getElementById(id).value;
+  document.getElementById(valId).textContent = v + suffix;
+  setSetting(id.replace('-','_'), v);
+  updateSensBar(id);
+}
+
+function updateSensBar(id){
+  var val  = parseInt(document.getElementById(id).value);
+  var min  = parseInt(document.getElementById(id).min);
+  var max  = parseInt(document.getElementById(id).max);
+  var segs = max - min + 1;
+  var barId = id === 'min-chars' ? 'sens-bar-noise' : 'sens-bar-timeout';
+  var bar = document.getElementById(barId);
+  var html = '';
+  for(var i=min;i<=max;i++){
+    html += '<div class="sens-seg'+(i<=val?' on':'')+'"></div>';
+  }
+  bar.innerHTML = html;
+}
+
+// ─── BEEP ─────────────────────────────────────────────
+var audioCtx = null;
+function getAudioCtx(){
+  if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function beep(freq,dur,vol){
+  if(getSetting('beep_mode','on')==='off') return;
+  try{
+    var ctx=getAudioCtx(), osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value=freq||880;
+    gain.gain.setValueAtTime(vol||0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+(dur||0.15));
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+(dur||0.15));
+  }catch(e){}
+}
+function beepStart(){ beep(880,0.12,0.4); }
+function beepSent() { beep(660,0.18,0.35); }
+function beepFail() { beep(300,0.25,0.3); }
+
 // ─── DEVICE KEY ───────────────────────────────────────
 function genKey(){
-  var arr = new Uint8Array(24);
-  window.crypto.getRandomValues(arr);
+  var arr=new Uint8Array(24); window.crypto.getRandomValues(arr);
   return Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
 }
 function loadKey(){
-  var k = localStorage.getItem('device_key');
-  if(!k){ k = genKey(); localStorage.setItem('device_key', k); }
+  var k=localStorage.getItem('device_key');
+  if(!k){ k=genKey(); localStorage.setItem('device_key',k); }
   return k;
 }
-var deviceKey = loadKey();
-
+var deviceKey=loadKey();
 function regenKey(){
-  if(!confirm('キーを再生成するとラズパイ側の設定も変更が必要です。続けますか？')) return;
-  deviceKey = genKey();
-  localStorage.setItem('device_key', deviceKey);
-  document.getElementById('key-display').textContent = deviceKey;
+  if(!confirm('キーを再生成するとラズパイ側の設定変更も必要です。続けますか？')) return;
+  deviceKey=genKey(); localStorage.setItem('device_key',deviceKey);
+  document.getElementById('key-display').textContent=deviceKey;
 }
 function copyKey(){
-  navigator.clipboard.writeText(deviceKey).then(function(){
-    showFB('📋 キーをコピーしました','var(--accent)');
-  });
+  navigator.clipboard.writeText(deviceKey).then(function(){ showFB('📋 キーをコピーしました','info'); });
 }
 
 // ─── DEFAULT WORDS ────────────────────────────────────
@@ -347,17 +499,25 @@ var ws        = null;
 var recog     = null;
 var isRec     = false;
 var lastTxt   = '';
-var lastHit   = null;  // {word, raw, isAlias}
-var matchMode = localStorage.getItem('matchMode') || 'partial';
+var lastHit   = null;
+var matchMode = getSetting('matchMode','partial');
+var autoMode  = false;
+var autoRecog = null;
+var autoLoop  = true;
+var recTimer  = null;
 
 function loadWords(){
-  try{
-    var s = localStorage.getItem('medwords_v3');
-    if(s){ var d=JSON.parse(s); if(Array.isArray(d)&&d.length>0) return d; }
-  }catch(e){}
+  try{ var s=localStorage.getItem('medwords_v3'); if(s){ var d=JSON.parse(s); if(Array.isArray(d)&&d.length>0) return d; } }catch(e){}
   return makeDefaultWords();
 }
-function saveWords(){ localStorage.setItem('medwords_v3', JSON.stringify(words)); }
+function saveWords(){ localStorage.setItem('medwords_v3',JSON.stringify(words)); }
+
+// ─── NOISE FILTER ─────────────────────────────────────
+function isFiltered(txt){
+  var t = txt.trim();
+  if(t.length < getMinChars()) return true;   // 短すぎる
+  return false;
+}
 
 // ─── TABS ─────────────────────────────────────────────
 function showTab(name){
@@ -370,30 +530,278 @@ function showTab(name){
   if(name==='settings') initSettings();
 }
 
-// ─── WORD RENDERING ───────────────────────────────────
-function renderWords(){
-  ['med','rec'].forEach(function(cat){
-    var el   = document.getElementById('list-'+cat);
-    var list = words.filter(function(w){ return w.cat===cat; });
-    if(!list.length){ el.innerHTML='<div class="empty-note">ワードがありません</div>'; return; }
-    el.innerHTML = list.map(function(w){ return renderWordCard(w); }).join('');
-  });
+// ─── AUTO MODE ────────────────────────────────────────
+function startAutoMode(){
+  autoMode=true; autoLoop=true;
+  document.getElementById('auto-overlay').classList.add('show');
+  document.getElementById('countdown-wrap').style.display='flex';
+  document.getElementById('auto-rec-wrap').classList.remove('show');
+  try{ getAudioCtx().resume(); }catch(e){}
+  var n=document.getElementById('countdown-num');
+  n.textContent='1'; n.style.animation='none';
+  setTimeout(function(){ n.style.animation=''; },10);
+  setTimeout(function(){
+    document.getElementById('countdown-wrap').style.display='none';
+    document.getElementById('auto-rec-wrap').classList.add('show');
+    beepStart(); autoListen();
+  },1000);
 }
 
-function renderWordCard(w){
-  var pChips = (w.patterns||[]).map(function(p,pi){
-    var isMain = (p===w.word);
-    if(isMain){
-      return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>';
-    }
-    return '<div class="pattern-chip"><span>'+esc(p)+'</span>'
-      +'<button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
-  }).join('');
+function stopAutoMode(){
+  autoMode=false; autoLoop=false;
+  if(autoRecog){ try{ autoRecog.stop(); }catch(e){} autoRecog=null; }
+  clearTimeout(recTimer);
+  document.getElementById('auto-overlay').classList.remove('show');
+}
 
+function autoListen(){
+  if(!autoLoop) return;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ stopAutoMode(); alert('音声認識非対応'); return; }
+
+  setAutoStatus('listening','● 聞き取り中');
+  setAutoTranscript('話してください…','ph');
+
+  autoRecog=new SR();
+  autoRecog.lang='ja-JP';
+  autoRecog.interimResults=true;
+  autoRecog.maxAlternatives=1;  // 1番候補のみ（確実性重視）
+  autoRecog.continuous=false;
+
+  var sent=false;
+  var lastAutoTxt='';
+  var lastAutoHit=null;
+
+  // タイムアウト設定
+  var timeoutMs = getRecTimeout() * 1000;
+  recTimer = setTimeout(function(){
+    if(!sent && autoLoop){
+      if(autoRecog){ try{ autoRecog.stop(); }catch(e){} }
+    }
+  }, timeoutMs);
+
+  autoRecog.onresult=function(ev){
+    clearTimeout(recTimer);
+    var interim='',final='';
+    for(var i=ev.resultIndex;i<ev.results.length;i++){
+      var t=ev.results[i][0].transcript;
+      if(ev.results[i].isFinal) final+=t; else interim+=t;
+    }
+    var cur=(final||interim).trim();
+    if(cur) lastAutoTxt=cur;
+
+    // フィルター判定
+    if(isFiltered(cur)){
+      setAutoStatus('filtered','— フィルター');
+      setAutoTranscript('「'+cur+'」は短すぎます','filtered');
+    } else {
+      var hit=matchWord(cur); lastAutoHit=hit;
+      if(hit){ setAutoTranscript(hit.word,hit.isAlias?'alias':'matched'); setAutoStatus(hit.isAlias?'alias':'matched',hit.isAlias?'⚠ 誤変換マッチ':'✓ マッチ'); }
+      else   { setAutoTranscript(cur,'interim'); }
+    }
+
+    if(final&&!sent){
+      sent=true;
+      var h=lastAutoHit||(!isFiltered(lastAutoTxt)?matchWord(lastAutoTxt):null);
+      if(h){ sendWordAuto(h); }
+      else {
+        if(isFiltered(lastAutoTxt)){
+          addLog({type:'filtered',word:lastAutoTxt,ok:false,status:'フィルター'});
+        } else {
+          beepFail();
+          setAutoStatus('nomatch','✗ 一致なし');
+          addLog({type:'send',word:lastAutoTxt,raw:lastAutoTxt,isAlias:false,ok:false,status:'不一致'});
+        }
+        scheduleNextListen();
+      }
+    }
+  };
+
+  autoRecog.onerror=function(ev){
+    clearTimeout(recTimer);
+    if(ev.error==='no-speech'){ if(autoLoop) autoListen(); return; }
+    addLog({type:'sys',status:'MIC:'+ev.error,ok:false});
+    scheduleNextListen();
+  };
+
+  autoRecog.onend=function(){
+    clearTimeout(recTimer);
+    if(!sent&&autoLoop){
+      var h=lastAutoHit||(lastAutoTxt&&!isFiltered(lastAutoTxt)?matchWord(lastAutoTxt):null);
+      if(h&&!sent){ sent=true; sendWordAuto(h); }
+      else if(!sent){ scheduleNextListen(); }
+    }
+  };
+
+  autoRecog.start();
+}
+
+function sendWordAuto(hitObj){
+  var waitMs=parseInt(getSetting('auto_wait','1500'));
+  sendWord(hitObj);
+  var banner=document.getElementById('auto-sent-banner');
+  if(hitObj.isAlias){
+    banner.className='show warn';
+    banner.textContent='⚠ 送信: 「'+hitObj.word+'」\n(認識:「'+hitObj.raw+'」)';
+  } else {
+    banner.className='show ok';
+    banner.textContent='✓ 送信: 「'+hitObj.word+'」';
+  }
+  beepSent();
+  setTimeout(function(){ banner.classList.remove('show'); scheduleNextListen(); },waitMs);
+}
+
+function scheduleNextListen(){
+  if(!autoLoop) return;
+  setTimeout(function(){ if(autoLoop){ beepStart(); autoListen(); } },400);
+}
+
+function setAutoStatus(cls,txt){
+  var el=document.getElementById('auto-status-badge');
+  el.className=cls; el.textContent=txt;
+}
+function setAutoTranscript(txt,mode){
+  var el=document.getElementById('auto-transcript');
+  el.className=mode||''; el.textContent=txt;
+}
+
+// ─── MATCHING ─────────────────────────────────────────
+function matchWord(transcript){
+  var t=transcript.trim();
+  var best=null,bestLen=0,bestIsAlias=false,bestPat='';
+  for(var i=0;i<words.length;i++){
+    var w=words[i]; var pats=w.patterns||[];
+    for(var j=0;j<pats.length;j++){
+      var pat=pats[j];
+      var hit=(matchMode==='exact')?(t===pat):(t.indexOf(pat)>=0);
+      if(hit&&pat.length>bestLen){ best=w; bestLen=pat.length; bestIsAlias=(pat!==w.word); bestPat=pat; }
+    }
+  }
+  if(!best) return null;
+  return {word:best.word,raw:t,matchedPat:bestPat,isAlias:bestIsAlias};
+}
+
+// ─── WEBSOCKET ────────────────────────────────────────
+function connectWS(){
+  var url=document.getElementById('ws-input').value.trim();
+  if(!url){ flashEl(document.getElementById('ws-input')); return; }
+  if(ws) ws.close();
+  setStatus('','接続中…');
+  ws=new WebSocket(url);
+  ws.onopen =function(){ setStatus('on','接続中'); addLog({type:'sys',status:'接続OK',ok:true}); localStorage.setItem('ws_url',url); };
+  ws.onclose=function(){ setStatus('','切断');    addLog({type:'sys',status:'切断',ok:false}); };
+  ws.onerror=function(){ addLog({type:'sys',status:'エラー',ok:false}); };
+}
+function setStatus(cls,txt){
+  document.getElementById('status-dot').className=cls;
+  document.getElementById('status-txt').textContent=txt;
+}
+function sendWord(hitObj){
+  if(!ws||ws.readyState!==WebSocket.OPEN){
+    addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:false,status:'未接続'});
+    showFB('⚠ 未接続','danger'); return;
+  }
+  ws.send(JSON.stringify({word:hitObj.word,raw:hitObj.raw,matched_by:hitObj.isAlias?'alias':'exact',key:deviceKey}));
+  addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:true,status:'送信OK'});
+  if(!autoMode){
+    if(hitObj.isAlias){ showFB('⚠ 誤変換経由\n「'+hitObj.raw+'」→「'+hitObj.word+'」','warn'); }
+    else              { showFB('✓ '+hitObj.word+' 送信','ok'); }
+  }
+}
+
+// ─── MANUAL RECORD ────────────────────────────────────
+function recStart(e){
+  e.preventDefault(); if(isRec) return;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ alert('音声認識非対応\niOS Safariを使ってください'); return; }
+  try{ getAudioCtx().resume(); }catch(e2){}
+  recog=new SR(); recog.lang='ja-JP'; recog.interimResults=true;
+  recog.maxAlternatives=1; recog.continuous=true;
+  recog.onstart=function(){
+    isRec=true; lastTxt=''; lastHit=null;
+    document.getElementById('mic-btn').classList.add('rec');
+    document.getElementById('waveform').classList.add('active');
+    document.getElementById('mic-lbl').textContent='REC';
+    document.getElementById('mic-icon').textContent='⏹';
+    setTranscript('','interim'); beepStart();
+  };
+  recog.onresult=function(ev){
+    var interim='',final='';
+    for(var i=ev.resultIndex;i<ev.results.length;i++){
+      var t=ev.results[i][0].transcript;
+      if(ev.results[i].isFinal) final+=t; else interim+=t;
+    }
+    var cur=(final||interim).trim();
+    if(cur) lastTxt=cur;
+    if(isFiltered(cur)){
+      setTranscript(cur,'filtered');
+    } else {
+      var hit=matchWord(cur); lastHit=hit;
+      if(hit){ setTranscript(hit.word,hit.isAlias?'alias':'matched'); }
+      else   { setTranscript(cur,'interim'); }
+    }
+  };
+  recog.onerror=function(ev){ addLog({type:'sys',status:'MIC:'+ev.error,ok:false}); };
+  recog.onend  =function(){ if(isRec) stopAndJudge(); };
+  recog.start();
+}
+
+function recStop(e){ if(!isRec) return; e.preventDefault(); stopAndJudge(); }
+
+function stopAndJudge(){
+  isRec=false;
+  if(recog){ try{ recog.stop(); }catch(e){} recog=null; }
+  document.getElementById('mic-btn').classList.remove('rec');
+  document.getElementById('waveform').classList.remove('active');
+  document.getElementById('mic-lbl').textContent='HOLD';
+  document.getElementById('mic-icon').textContent='🎤';
+  if(!lastTxt){ setTranscript('',''); return; }
+  if(isFiltered(lastTxt)){
+    setTranscript(lastTxt,'filtered');
+    showFB('— 「'+lastTxt+'」は短すぎてフィルターしました','info');
+    addLog({type:'filtered',word:lastTxt,ok:false,status:'フィルター'});
+    return;
+  }
+  var hit=lastHit||matchWord(lastTxt);
+  if(hit){ setTranscript(hit.word,hit.isAlias?'alias':'matched'); sendWord(hit); beepSent(); }
+  else   { setTranscript(lastTxt,'nomatch'); showFB('✗ 一致なし','danger'); beepFail(); addLog({type:'send',word:lastTxt,raw:lastTxt,isAlias:false,ok:false,status:'不一致'}); }
+}
+
+function setTranscript(t,mode){
+  var box=document.getElementById('transcript-box');
+  var el=document.getElementById('transcript-txt');
+  el.className=''; box.className='';
+  if(!t){ el.textContent='長押しで録音開始'; el.classList.add('ph'); }
+  else{
+    el.textContent=t; if(mode){ el.classList.add(mode);
+    if(mode==='matched')  box.classList.add('state-matched');
+    else if(mode==='alias')    box.classList.add('state-alias');
+    else if(mode==='nomatch')  box.classList.add('state-nomatch');
+    else if(mode==='filtered') box.classList.add('state-filtered');
+    else if(mode==='interim')  box.classList.add('active');
+    }
+  }
+}
+
+// ─── WORD EDITOR ──────────────────────────────────────
+function renderWords(){
+  ['med','rec'].forEach(function(cat){
+    var el=document.getElementById('list-'+cat);
+    var list=words.filter(function(w){ return w.cat===cat; });
+    if(!list.length){ el.innerHTML='<div class="empty-note">ワードがありません</div>'; return; }
+    el.innerHTML=list.map(function(w){ return renderWordCard(w); }).join('');
+  });
+}
+function renderWordCard(w){
+  var pChips=(w.patterns||[]).map(function(p,pi){
+    var isMain=(p===w.word);
+    if(isMain) return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>';
+    return '<div class="pattern-chip"><span>'+esc(p)+'</span><button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
+  }).join('');
   return '<div class="word-card" id="wcard-'+w.id+'">'
     +'<div class="word-card-header" onclick="toggleCard(\''+w.id+'\')">'
     +'<span class="wch-name">'+esc(w.word)+'</span>'
-    +'<span class="cat-badge'+(w.cat==='rec'?' rec':'')+'">'+( w.cat==='med'?'医療':'記録')+'</span>'
+    +'<span class="cat-badge '+(w.cat==='med'?'med':'rec')+'">'+(w.cat==='med'?'医療':'記録')+'</span>'
     +'<button class="del-word-btn" onclick="delWord(\''+w.id+'\',event)">🗑</button>'
     +'<span class="toggle-icon" id="tico-'+w.id+'">▼</span>'
     +'</div>'
@@ -405,66 +813,43 @@ function renderWordCard(w){
     +'<button class="btn-xs" onclick="addPattern(\''+w.id+'\')">＋</button>'
     +'</div></div></div>';
 }
-
 function toggleCard(id){
-  var area=document.getElementById('parea-'+id);
-  var icon=document.getElementById('tico-'+id);
-  if(area.classList.contains('open')){ area.classList.remove('open'); icon.classList.remove('open'); }
-  else { area.classList.add('open'); icon.classList.add('open'); }
+  var a=document.getElementById('parea-'+id),ic=document.getElementById('tico-'+id);
+  if(a.classList.contains('open')){ a.classList.remove('open'); ic.classList.remove('open'); }
+  else{ a.classList.add('open'); ic.classList.add('open'); }
 }
-
 function addWord(){
-  var inp=document.getElementById('new-word');
-  var cat=document.getElementById('new-cat').value;
-  var w=inp.value.trim();
+  var inp=document.getElementById('new-word'),cat=document.getElementById('new-cat').value,w=inp.value.trim();
   if(!w) return;
   if(words.some(function(x){ return x.word===w; })){ flashEl(inp); return; }
-  words.push({id:uid(),word:w,cat:cat,patterns:[w]});
-  saveWords(); inp.value=''; renderWords();
+  words.push({id:uid(),word:w,cat:cat,patterns:[w]}); saveWords(); inp.value=''; renderWords();
 }
-
 function delWord(id,e){
   e.stopPropagation();
   var w=words.filter(function(x){ return x.id===id; })[0];
   if(!w||!confirm('「'+w.word+'」を削除しますか？')) return;
-  words=words.filter(function(x){ return x.id!==id; });
-  saveWords(); renderWords();
+  words=words.filter(function(x){ return x.id!==id; }); saveWords(); renderWords();
 }
-
 function addPattern(id){
-  var inp=document.getElementById('pinput-'+id);
-  var val=inp.value.trim();
-  if(!val) return;
-  var w=words.filter(function(x){ return x.id===id; })[0];
-  if(!w) return;
+  var inp=document.getElementById('pinput-'+id),val=inp.value.trim(); if(!val) return;
+  var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return;
   if(w.patterns.indexOf(val)>=0){ flashEl(inp); return; }
-  w.patterns.push(val);
-  saveWords(); refreshPatternList(w); inp.value='';
+  w.patterns.push(val); saveWords(); refreshPatternList(w); inp.value='';
 }
-
 function delPattern(id,pi){
-  var w=words.filter(function(x){ return x.id===id; })[0];
-  if(!w) return;
+  var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return;
   if(w.patterns[pi]===w.word){ alert('送信ワード本体は削除できません'); return; }
-  w.patterns.splice(pi,1);
-  saveWords(); refreshPatternList(w);
+  w.patterns.splice(pi,1); saveWords(); refreshPatternList(w);
 }
-
 function refreshPatternList(w){
-  var el=document.getElementById('plist-'+w.id);
-  if(!el) return;
+  var el=document.getElementById('plist-'+w.id); if(!el) return;
   el.innerHTML=(w.patterns||[]).map(function(p,pi){
     var isMain=(p===w.word);
     if(isMain) return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>';
-    return '<div class="pattern-chip"><span>'+esc(p)+'</span>'
-      +'<button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
+    return '<div class="pattern-chip"><span>'+esc(p)+'</span><button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
   }).join('');
 }
-
-function resetWords(){
-  if(!confirm('全ワードをデフォルトに戻しますか？')) return;
-  words=makeDefaultWords(); saveWords(); renderWords();
-}
+function resetWords(){ if(!confirm('全ワードをデフォルトに戻しますか？')) return; words=makeDefaultWords(); saveWords(); renderWords(); }
 function exportData(){
   var a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([JSON.stringify(words,null,2)],{type:'application/json'}));
@@ -474,207 +859,87 @@ function importClick(){ document.getElementById('import-file').click(); }
 function importData(e){
   var f=e.target.files[0]; if(!f) return;
   var r=new FileReader();
-  r.onload=function(ev){
-    try{ var d=JSON.parse(ev.target.result); if(!Array.isArray(d)) throw 0; words=d; saveWords(); renderWords(); alert('インポート完了'); }
-    catch(err){ alert('形式エラー'); }
-  };
+  r.onload=function(ev){ try{ var d=JSON.parse(ev.target.result); if(!Array.isArray(d)) throw 0; words=d; saveWords(); renderWords(); alert('インポート完了'); }catch(err){ alert('形式エラー'); } };
   r.readAsText(f);
 }
 
-// ─── SETTINGS ─────────────────────────────────────────
+// ─── SETTINGS INIT ────────────────────────────────────
 function initSettings(){
-  document.getElementById('key-display').textContent = deviceKey;
-  var sel=document.getElementById('match-mode');
-  sel.value=matchMode;
-  sel.onchange=function(e){ matchMode=e.target.value; localStorage.setItem('matchMode',matchMode); };
-}
+  document.getElementById('key-display').textContent=deviceKey;
 
-// ─── MATCHING ─────────────────────────────────────────
-function matchWord(transcript){
-  var t=transcript.trim();
-  var best=null, bestLen=0, bestIsAlias=false, bestPat='';
-  for(var i=0;i<words.length;i++){
-    var w=words[i];
-    var pats=w.patterns||[];
-    for(var j=0;j<pats.length;j++){
-      var pat=pats[j];
-      var hit=(matchMode==='exact')?(t===pat):(t.indexOf(pat)>=0);
-      if(hit && pat.length>bestLen){
-        best=w; bestLen=pat.length;
-        bestIsAlias=(pat!==w.word);
-        bestPat=pat;
-      }
-    }
-  }
-  if(!best) return null;
-  return { word:best.word, raw:t, matchedPat:bestPat, isAlias:bestIsAlias };
-}
+  // 認識感度スライダー
+  var mc=document.getElementById('min-chars');
+  mc.value=getSetting('min_chars','2');
+  document.getElementById('min-chars-val').textContent=mc.value+'文字以上';
+  updateSensBar('min-chars');
 
-// ─── WEBSOCKET ────────────────────────────────────────
-function connectWS(){
-  var url=document.getElementById('ws-input').value.trim();
-  if(!url){ flashEl(document.getElementById('ws-input')); return; }
-  if(ws) ws.close();
-  setStatus('','接続中…');
-  ws=new WebSocket(url);
-  ws.onopen =function(){ setStatus('on','接続中'); addLog({type:'sys',status:'接続OK',ok:true}); localStorage.setItem('ws_url',url); };
-  ws.onclose=function(){ setStatus('','切断');     addLog({type:'sys',status:'切断',ok:false}); };
-  ws.onerror=function(){ addLog({type:'sys',status:'エラー',ok:false}); };
-}
-function setStatus(cls,txt){
-  document.getElementById('status-dot').className=cls;
-  document.getElementById('status-txt').textContent=txt;
-}
+  var rt=document.getElementById('rec-timeout');
+  rt.value=getSetting('rec_timeout','4');
+  document.getElementById('rec-timeout-val').textContent=rt.value+'秒';
+  updateSensBar('rec-timeout');
 
-function sendWord(hitObj){
-  // hitObj: {word, raw, matchedPat, isAlias}
-  if(!ws||ws.readyState!==WebSocket.OPEN){
-    addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:false,status:'未接続'});
-    showFB('⚠ 未接続','var(--danger)');
-    return;
-  }
-  var payload = JSON.stringify({
-    word:       hitObj.word,
-    raw:        hitObj.raw,
-    matched_by: hitObj.isAlias ? 'alias' : 'exact',
-    key:        deviceKey
-  });
-  ws.send(payload);
-  addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:true,status:'送信OK'});
-  if(hitObj.isAlias){
-    showFB('⚠ 誤変換→送信\n認識:「'+hitObj.raw+'」→「'+hitObj.word+'」','var(--warn)');
-  } else {
-    showFB('✓ '+hitObj.word+' 送信','var(--green)');
-  }
-}
+  var mm=document.getElementById('match-mode');
+  mm.value=matchMode;
+  mm.onchange=function(e){ matchMode=e.target.value; setSetting('matchMode',matchMode); };
 
-// ─── SPEECH ───────────────────────────────────────────
-function recStart(e){
-  e.preventDefault();
-  if(isRec) return;
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ alert('音声認識非対応\niOS Safariを使ってください'); return; }
-  recog=new SR();
-  recog.lang='ja-JP';
-  recog.interimResults=true;
-  recog.maxAlternatives=3;
-  recog.continuous=true;
-  recog.onstart=function(){
-    isRec=true; lastTxt=''; lastHit=null;
-    document.getElementById('mic-btn').classList.add('rec');
-    document.getElementById('waveform').classList.add('active');
-    document.getElementById('transcript-box').classList.add('active');
-    document.getElementById('mic-lbl').textContent='REC';
-    document.getElementById('mic-icon').textContent='⏹';
-    setTxt('','interim');
-  };
-  recog.onresult=function(ev){
-    var interim='',final='';
-    for(var i=ev.resultIndex;i<ev.results.length;i++){
-      var t=ev.results[i][0].transcript;
-      if(ev.results[i].isFinal) final+=t; else interim+=t;
-    }
-    var cur=(final||interim).trim();
-    if(cur) lastTxt=cur;
-    var hit=matchWord(cur);
-    lastHit=hit;
-    if(hit){
-      setTxt(hit.word, hit.isAlias?'alias':'matched');
-    } else {
-      setTxt(cur,'interim');
-    }
-  };
-  recog.onerror=function(ev){ addLog({type:'sys',status:'MIC:'+ev.error,ok:false}); };
-  recog.onend  =function(){ if(isRec) stopAndJudge(); };
-  recog.start();
-}
+  var aw=document.getElementById('auto-wait');
+  aw.value=getSetting('auto_wait','1500');
+  aw.onchange=function(e){ setSetting('auto_wait',e.target.value); };
 
-function recStop(e){
-  if(!isRec) return;
-  e.preventDefault();
-  stopAndJudge();
-}
-
-function stopAndJudge(){
-  isRec=false;
-  if(recog){ try{ recog.stop(); }catch(e){} recog=null; }
-  document.getElementById('mic-btn').classList.remove('rec');
-  document.getElementById('waveform').classList.remove('active');
-  document.getElementById('transcript-box').classList.remove('active');
-  document.getElementById('mic-lbl').textContent='HOLD';
-  document.getElementById('mic-icon').textContent='🎤';
-  if(!lastTxt){ setTxt('',''); return; }
-  var hit=lastHit||matchWord(lastTxt);
-  if(hit){
-    setTxt(hit.word, hit.isAlias?'alias':'matched');
-    sendWord(hit);
-  } else {
-    setTxt(lastTxt,'nomatch');
-    showFB('✗ 一致なし — ワードタブでパターン追加できます','var(--danger)');
-    addLog({type:'send',word:lastTxt,raw:lastTxt,isAlias:false,ok:false,status:'不一致'});
-  }
-}
-
-function setTxt(t,mode){
-  var el=document.getElementById('transcript-txt');
-  el.className='';
-  if(!t){ el.textContent='長押しで録音開始'; el.classList.add('ph'); }
-  else  { el.textContent=t; if(mode) el.classList.add(mode); }
+  var bm=document.getElementById('beep-mode');
+  bm.value=getSetting('beep_mode','on');
+  bm.onchange=function(e){ setSetting('beep_mode',e.target.value); };
 }
 
 // ─── LOG ──────────────────────────────────────────────
 function addLog(opt){
-  // opt: {type:'sys'|'send', word, raw, isAlias, ok, status}
   var log=document.getElementById('log');
   var now=new Date();
   var t=pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
-
   var row=document.createElement('div');
-
   if(opt.type==='sys'){
-    row.className='log-row '+(opt.ok?'ok':'ng');
-    row.innerHTML='<div class="log-main">'
-      +'<span class="lt">'+t+'</span>'
-      +'<span class="lw '+(opt.ok?'ok':'ng')+'">SYSTEM</span>'
-      +'<span class="ls '+(opt.ok?'ok':'ng')+'" style="margin-left:auto;">'+esc(opt.status)+'</span>'
-      +'</div>';
+    row.className='log-row sys';
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw sys">SYSTEM</span><span class="ls sys" style="margin-left:auto;">'+esc(opt.status)+'</span></div>';
+  } else if(opt.type==='filtered'){
+    row.className='log-row filtered';
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw filtered">— '+esc(opt.word)+'</span><span class="ls filtered" style="margin-left:auto;">フィルター</span></div>'
+      +'<div class="log-sub">最短文字数フィルターで除外</div>';
   } else {
-    // send log
-    var cls = !opt.ok ? 'ng' : (opt.isAlias ? 'alias' : 'ok');
-    var icon = !opt.ok ? '✗' : (opt.isAlias ? '⚠' : '✓');
-    var sub = '';
-    if(opt.isAlias && opt.ok){
-      sub = '<div class="log-sub">認識: <span class="raw">「'+esc(opt.raw)+'」</span> → 送信: 「'+esc(opt.word)+'」</div>';
-    } else if(!opt.ok && opt.status==='不一致'){
-      sub = '<div class="log-sub">「'+esc(opt.raw)+'」はワードリストに未登録</div>';
-    }
+    var cls=!opt.ok?'ng':(opt.isAlias?'alias':'ok');
+    var icon=!opt.ok?'✗':(opt.isAlias?'⚠':'✓');
+    var sub='';
+    if(opt.isAlias&&opt.ok) sub='<div class="log-sub">認識: <span class="raw">「'+esc(opt.raw)+'」</span> → 送信: 「'+esc(opt.word)+'」</div>';
+    else if(!opt.ok&&opt.status==='不一致') sub='<div class="log-sub">「'+esc(opt.raw)+'」はワードリストに未登録</div>';
     row.className='log-row '+cls;
-    row.innerHTML='<div class="log-main">'
-      +'<span class="lt">'+t+'</span>'
-      +'<span class="lw '+cls+'">'+icon+' '+esc(opt.word)+'</span>'
-      +'<span class="ls '+cls+'" style="margin-left:auto;">'+esc(opt.status)+'</span>'
-      +'</div>'+sub;
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw '+cls+'">'+icon+' '+esc(opt.word)+'</span><span class="ls '+cls+'" style="margin-left:auto;">'+esc(opt.status)+'</span></div>'+sub;
   }
-
   log.insertBefore(row,log.firstChild);
   while(log.children.length>30) log.removeChild(log.lastChild);
 }
 
-// ─── UI HELPERS ───────────────────────────────────────
-function showFB(msg,color){
+function showFB(msg,type){
   var el=document.getElementById('feedback');
-  el.textContent=msg; el.style.color=color; el.classList.add('show');
-  clearTimeout(el._t);
-  el._t=setTimeout(function(){ el.classList.remove('show'); },2800);
+  el.textContent=msg; el.className='show fb-'+type;
+  clearTimeout(el._t); el._t=setTimeout(function(){ el.classList.remove('show'); },2800);
 }
 
 // ─── INIT ─────────────────────────────────────────────
 window.onload=function(){
   var s=localStorage.getItem('ws_url');
   if(s) document.getElementById('ws-input').value=s;
-  document.getElementById('new-word').addEventListener('keydown',function(e){
-    if(e.key==='Enter') addWord();
-  });
+  document.getElementById('new-word').addEventListener('keydown',function(e){ if(e.key==='Enter') addWord(); });
+
+  if(window.location.search.indexOf('auto=1')>=0){
+    var savedUrl=localStorage.getItem('ws_url');
+    if(savedUrl){
+      ws=new WebSocket(savedUrl);
+      ws.onopen =function(){ setStatus('on','接続中'); addLog({type:'sys',status:'接続OK',ok:true}); startAutoMode(); };
+      ws.onclose=function(){ setStatus('','切断'); addLog({type:'sys',status:'切断',ok:false}); };
+      ws.onerror=function(){ addLog({type:'sys',status:'エラー',ok:false}); startAutoMode(); };
+    } else {
+      startAutoMode();
+    }
+  }
 };
 </script>
 </body>
