@@ -839,7 +839,10 @@ function showAutoSentBanner(hitObj){
 }
 function scheduleNextListen(){
   if(!autoLoop) return;
-  setTimeout(function(){ if(autoLoop){ beepStart(); autoListen(); } },1200);
+  // 送信後3秒待ってオーバーレイを閉じて通常画面に戻る
+  setTimeout(function(){
+    if(autoLoop) stopAutoMode();
+  }, 3000);
 }
 function setAutoStatus(cls,txt){ var el=document.getElementById('auto-status-badge'); el.className=cls; el.textContent=txt; }
 function setAutoTranscript(txt,mode){ var el=document.getElementById('auto-transcript'); el.className=mode||''; el.textContent=txt; }
