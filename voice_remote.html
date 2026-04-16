@@ -27,6 +27,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 .tab-btn{flex:1;background:none;border:none;color:var(–text3);font-family:var(–sans);font-size:12px;font-weight:700;letter-spacing:.04em;padding:14px 0 12px;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;}
 .tab-btn.active{color:var(–accent);border-bottom-color:var(–accent);}
 
+#page-home{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 14px env(safe-area-inset-bottom,20px);}
+#page-home.active{display:flex;flex-direction:column;gap:14px;}
 .page{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 14px env(safe-area-inset-bottom,20px);}
 .page.active{display:flex;flex-direction:column;gap:14px;}
 
@@ -82,12 +84,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 #auto-stop-btn:active{opacity:.75;}
 
 /* TRANSCRIPT */
-#transcript-box{min-height:90px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-radius:14px;background:var(–white);border:2px solid var(–border);transition:border-color .3s,background .3s;}
-#transcript-box.active      {border-color:var(–accent);}
-#transcript-box.state-matched{border-color:var(–green);background:var(–green-l);}
-#transcript-box.state-alias  {border-color:var(–warn); background:var(–warn-l);}
-#transcript-box.state-nomatch{border-color:var(–danger);background:var(–danger-l);}
-#transcript-box.state-filtered{border-color:var(–border2);background:var(–bg);}
 #transcript-txt{font-size:28px;font-weight:900;text-align:center;word-break:break-all;line-height:1.2;padding:0 12px;transition:color .2s;color:var(–text3);}
 #transcript-txt.ph      {font-size:14px;font-weight:400;color:var(–text3);}
 #transcript-txt.interim {color:var(–accent);}
@@ -103,30 +99,41 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 .wbar:nth-child(4){animation-delay:.3s;}.wbar:nth-child(5){animation-delay:.2s;}.wbar:nth-child(6){animation-delay:.1s;}.wbar:nth-child(7){animation-delay:0s;}
 @keyframes wv{0%,100%{height:4px;}50%{height:26px;}}
 
-/* MIC BUTTON - タップ式 */
-.mic-wrap{display:flex;flex-direction:column;align-items:center;gap:10px;}
+/* MIC BUTTON - 画面中央全体の巨大タップボタン */
 #mic-btn{
-width:120px;height:120px;border-radius:50%;
+width:100%;flex:1;min-height:240px;
+border-radius:20px;
 border:3px solid var(–border2);background:var(–white);
 cursor:pointer;
-display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
 -webkit-user-select:none;user-select:none;
-transition:transform .1s,border-color .2s,box-shadow .2s;
-box-shadow:0 4px 16px rgba(0,0,0,.10);
+transition:border-color .2s,background .2s;
+box-shadow:0 2px 12px rgba(0,0,0,.07);
+padding:20px;
 }
-#mic-btn.rec{
-border-color:var(–danger);
-animation:pulse-rec 1.2s infinite;
-}
-@keyframes pulse-rec{
-0%,100%{box-shadow:0 0 0 6px rgba(211,47,47,.15),0 4px 16px rgba(0,0,0,.12);}
-50%{box-shadow:0 0 0 14px rgba(211,47,47,.07),0 4px 16px rgba(0,0,0,.12);}
-}
-#mic-btn:active{transform:scale(.93);}
-#mic-icon{font-size:40px;line-height:1;}
-#mic-lbl{font-family:var(–mono);font-size:10px;font-weight:600;letter-spacing:.12em;color:var(–text3);text-transform:uppercase;}
+#mic-btn.rec{border-color:var(–danger);background:var(–danger-l);}
+#mic-btn.state-matched{border-color:var(–green);background:var(–green-l);}
+#mic-btn.state-alias  {border-color:var(–warn); background:var(–warn-l);}
+#mic-btn.state-nomatch{border-color:var(–danger);background:var(–danger-l);}
+#mic-btn:active{opacity:.85;}
+#mic-icon{font-size:56px;line-height:1;transition:transform .2s;}
+#mic-btn.rec #mic-icon{transform:scale(1.1);}
+#mic-lbl{font-family:var(–mono);font-size:13px;font-weight:600;letter-spacing:.12em;color:var(–text3);text-transform:uppercase;}
 #mic-btn.rec #mic-lbl{color:var(–danger);}
-.mic-hint{font-size:12px;color:var(–text3);text-align:center;line-height:1.5;}
+#transcript-txt{font-size:26px;font-weight:900;text-align:center;word-break:break-all;line-height:1.2;color:var(–text3);}
+#transcript-txt.ph     {font-size:14px;font-weight:400;color:var(–text3);}
+#transcript-txt.interim{color:var(–accent);}
+#transcript-txt.matched{color:var(–green);}
+#transcript-txt.alias  {color:var(–warn);}
+#transcript-txt.nomatch{color:var(–danger);}
+#transcript-txt.filtered{font-size:14px;color:var(–text3);}
+#waveform{display:flex;align-items:center;justify-content:center;gap:5px;height:32px;opacity:0;transition:opacity .3s;}
+#waveform.active{opacity:1;}
+.wbar{width:4px;background:var(–accent);border-radius:4px;animation:wv 1s ease-in-out infinite;}
+.wbar:nth-child(1){animation-delay:0s;}.wbar:nth-child(2){animation-delay:.1s;}.wbar:nth-child(3){animation-delay:.2s;}
+.wbar:nth-child(4){animation-delay:.3s;}.wbar:nth-child(5){animation-delay:.2s;}.wbar:nth-child(6){animation-delay:.1s;}.wbar:nth-child(7){animation-delay:0s;}
+@keyframes wv{0%,100%{height:4px;}50%{height:26px;}}
+.mic-hint{display:none;}
 
 /* カウントダウンリング */
 #countdown-ring-wrap{
@@ -281,31 +288,17 @@ stroke-linecap:round;
     <span>▶</span>
   </div>
 
-  <div id="transcript-box">
-    <span id="transcript-txt" class="ph">タップで録音開始</span>
-  </div>
-  <div id="waveform">
-    <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
-    <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
-  </div>
+  <!-- 巨大タップボタン（transcript + waveform + mic統合） -->
 
-  <!-- タップ式ボタン（カウントダウンリング付き） -->
-
-  <div class="mic-wrap">
-    <div id="countdown-ring-wrap">
-      <!-- カウントダウンリング -->
-      <svg id="countdown-ring" width="130" height="130" viewBox="0 0 130 130">
-        <circle cx="65" cy="65" r="55"/>
-        <circle class="progress" cx="65" cy="65" r="55"/>
-      </svg>
-      <!-- ボタン本体 -->
-      <button id="mic-btn" onclick="toggleRec()">
-        <span id="mic-icon">🎤</span>
-        <span id="mic-lbl">TAP</span>
-      </button>
+  <button id="mic-btn" onclick="toggleRec()">
+    <div id="waveform">
+      <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
+      <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
     </div>
-    <div class="mic-hint" id="mic-hint-txt">タップで録音開始<br>録音後2秒で自動送信</div>
-  </div>
+    <span id="mic-icon">🎤</span>
+    <span id="transcript-txt" class="ph">タップで録音開始</span>
+    <span id="mic-lbl">TAP</span>
+  </button>
 
   <div id="feedback"></div>
   <div class="card">
@@ -454,7 +447,8 @@ function updateRangeVal(id,valId,suffix){
   updateSensBar(id);
   // ヒントテキスト更新
   if(id==='auto-send-sec'){
-    document.getElementById('mic-hint-txt').innerHTML='タップで録音開始<br>録音後'+v+'秒で自動送信';
+    var hint = document.getElementById('mic-hint-txt');
+    if(hint) hint.innerHTML='タップで録音開始<br>録音後'+v+'秒で自動送信';
   }
 }
 function updateSensBar(id){
@@ -740,17 +734,22 @@ function stopAndJudge(){
 }
 
 function setTranscript(t,mode){
-  var box=document.getElementById('transcript-box'),el=document.getElementById('transcript-txt');
-  el.className=''; box.className='';
-  if(!t){ el.textContent='タップで録音開始'; el.classList.add('ph'); }
-  else{ el.textContent=t; if(mode){
-    el.classList.add(mode);
-    if(mode==='matched')  box.classList.add('state-matched');
-    else if(mode==='alias')    box.classList.add('state-alias');
-    else if(mode==='nomatch')  box.classList.add('state-nomatch');
-    else if(mode==='filtered') box.classList.add('state-filtered');
-    else if(mode==='interim')  box.classList.add('active');
-  }}
+  var btn=document.getElementById('mic-btn');
+  var el =document.getElementById('transcript-txt');
+  // ボタンの状態クラスをリセット
+  btn.classList.remove('state-matched','state-alias','state-nomatch');
+  el.className='';
+  if(!t){
+    el.textContent='タップで録音開始'; el.classList.add('ph');
+  } else {
+    el.textContent=t;
+    if(mode){
+      el.classList.add(mode);
+      if(mode==='matched')  btn.classList.add('state-matched');
+      else if(mode==='alias')    btn.classList.add('state-alias');
+      else if(mode==='nomatch')  btn.classList.add('state-nomatch');
+    }
+  }
 }
 
 // ─── MATCHING ─────────────────────────────────────────
@@ -933,7 +932,8 @@ window.onload=function(){
   document.getElementById('new-word').addEventListener('keydown',function(e){ if(e.key==='Enter') addWord(); });
   // ヒントテキスト初期化
   var sec=getAutoSendSec();
-  document.getElementById('mic-hint-txt').innerHTML='タップで録音開始<br>録音後'+sec+'秒で自動送信';
+  var hint=document.getElementById('mic-hint-txt');
+  if(hint) hint.innerHTML='タップで録音開始<br>録音後'+sec+'秒で自動送信';
 
   if(window.location.search.indexOf('auto=1')>=0){
     if(savedUrl) connectWS(savedUrl);
