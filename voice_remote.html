@@ -416,6 +416,36 @@ function beepStart(){ beep(880,0.12,0.4); }
 function beepSent() { beep(660,0.18,0.35); }
 function beepFail() { beep(300,0.25,0.3); }
 function beepStop()  { beep(440,0.2,0.3); }
+function beepResult(){
+  // ラズパイ完了：2音上昇（ポポン）
+  try{
+    var ctx=getAudioCtx();
+    [660,880].forEach(function(freq,i){
+      var osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value=freq;
+      var t=ctx.currentTime+i*0.12;
+      gain.gain.setValueAtTime(0.3,t);
+      gain.gain.exponentialRampToValueAtTime(0.001,t+0.12);
+      osc.start(t); osc.stop(t+0.12);
+    });
+  }catch(e){}
+}
+function beepResultFail(){
+  // ラズパイ失敗：2音下降（ポポン低め）
+  try{
+    var ctx=getAudioCtx();
+    [440,300].forEach(function(freq,i){
+      var osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value=freq;
+      var t=ctx.currentTime+i*0.12;
+      gain.gain.setValueAtTime(0.3,t);
+      gain.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+      osc.start(t); osc.stop(t+0.15);
+    });
+  }catch(e){}
+}
 
 // ─── DEVICE KEY ───────────────────────────────────────
 function genKey(){
@@ -562,8 +592,10 @@ function connectWS(url){
       var data=JSON.parse(e.data);
       if(data.status==='ok'){
         addLog({type:'result',word:data.word||'',status:'ラズパイ完了',ok:true});
+        beepResult();
       } else if(data.status==='fail'){
         addLog({type:'result',word:data.word||'',status:'ラズパイ失敗',ok:false});
+        beepResultFail();
       } else if(data.status==='auth_error'){
         addLog({type:'sys',status:'認証エラー',ok:false});
       }
