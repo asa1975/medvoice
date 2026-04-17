@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -23,241 +22,186 @@
 html,body{height:100%;overflow:hidden;}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex;flex-direction:column;height:100dvh;}
 
-.tab-bar{display:flex;background:var(–white);border-bottom:2px solid var(–border);padding-top:env(safe-area-inset-top,0px);flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.tab-btn{flex:1;background:none;border:none;color:var(–text3);font-family:var(–sans);font-size:12px;font-weight:700;letter-spacing:.04em;padding:14px 0 12px;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;}
-.tab-btn.active{color:var(–accent);border-bottom-color:var(–accent);}
+/* TAB */
+.tab-bar{display:flex;background:var(--white);border-bottom:2px solid var(--border);padding-top:env(safe-area-inset-top,0px);flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.tab-btn{flex:1;background:none;border:none;color:var(--text3);font-family:var(--sans);font-size:12px;font-weight:700;letter-spacing:.04em;padding:14px 0 12px;cursor:pointer;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
 
-#page-home{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 14px env(safe-area-inset-bottom,20px);}
-#page-home.active{display:flex;flex-direction:column;gap:14px;}
+/* PAGE */
 .page{display:none;flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 14px env(safe-area-inset-bottom,20px);}
 .page.active{display:flex;flex-direction:column;gap:14px;}
 
-.card{background:var(–white);border:1px solid var(–border);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
-.card-label{font-family:var(–mono);font-size:10px;font-weight:600;letter-spacing:.12em;color:var(–text3);text-transform:uppercase;margin-bottom:10px;}
+/* CARD */
+.card{background:var(--white);border:1px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.card-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
 
+/* CONNECTION */
 .conn-row{display:flex;gap:8px;align-items:center;}
-.conn-input{flex:1;background:var(–bg);border:1.5px solid var(–border2);border-radius:10px;color:var(–text);font-family:var(–mono);font-size:12px;padding:10px 12px;outline:none;transition:border-color .2s;}
-.conn-input:focus{border-color:var(–accent);}
-.btn-primary{background:var(–accent);color:#fff;border:none;border-radius:10px;font-family:var(–sans);font-size:13px;font-weight:700;padding:10px 16px;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
+.conn-input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--mono);font-size:12px;padding:10px 12px;outline:none;transition:border-color .2s;}
+.conn-input:focus{border-color:var(--accent);}
+.btn-primary{background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:13px;font-weight:700;padding:10px 16px;cursor:pointer;white-space:nowrap;transition:opacity .15s;}
 .btn-primary:active{opacity:.75;}
 .conn-status{display:flex;align-items:center;gap:8px;margin-top:10px;}
-#status-dot{width:10px;height:10px;border-radius:50%;background:var(–danger);flex-shrink:0;transition:background .3s;}
-#status-dot.on{background:var(–green);animation:blink 2.5s infinite;}
-#status-dot.connecting{background:var(–warn);animation:blink .8s infinite;}
+#status-dot{width:10px;height:10px;border-radius:50%;background:var(--danger);flex-shrink:0;transition:background .3s;}
+#status-dot.on{background:var(--green);animation:blink 2.5s infinite;}
+#status-dot.connecting{background:var(--warn);animation:blink .8s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.4;}}
-#status-txt{font-family:var(–mono);font-size:12px;color:var(–text2);}
+#status-txt{font-family:var(--mono);font-size:12px;color:var(--text2);}
 
-/* AUTO OVERLAY */
-#auto-overlay{display:none;visibility:hidden;pointer-events:none;position:fixed;inset:0;z-index:100;background:#fff;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:32px;}
-#auto-overlay.show{display:flex;visibility:visible;pointer-events:auto;}
-#countdown-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;}
-#countdown-num{font-size:96px;font-weight:900;line-height:1;color:var(–accent);animation:pop .4s ease-out;}
-@keyframes pop{from{transform:scale(1.4);opacity:.4;}to{transform:scale(1);opacity:1;}}
-#countdown-label{font-size:16px;color:var(–text3);font-weight:700;letter-spacing:.06em;}
-#auto-rec-wrap{display:none;flex-direction:column;align-items:center;gap:20px;width:100%;}
-#auto-rec-wrap.show{display:flex;}
-#auto-conn-banner{width:100%;padding:14px;border-radius:12px;text-align:center;font-size:15px;font-weight:700;background:var(–warn-l);color:var(–warn);display:none;}
-#auto-conn-banner.show{display:block;}
-#auto-status-badge{font-size:13px;font-weight:700;font-family:var(–mono);letter-spacing:.1em;text-transform:uppercase;padding:6px 18px;border-radius:20px;}
-#auto-status-badge.listening{background:var(–accent-l);color:var(–accent);}
-#auto-status-badge.matched  {background:var(–green-l);color:var(–green);}
-#auto-status-badge.alias    {background:var(–warn-l);color:var(–warn);}
-#auto-status-badge.nomatch  {background:var(–danger-l);color:var(–danger);}
-#auto-status-badge.filtered {background:var(–bg);color:var(–text3);border:1px solid var(–border2);}
-#auto-transcript{font-size:32px;font-weight:900;text-align:center;word-break:break-all;line-height:1.3;min-height:48px;color:var(–text);transition:color .2s;}
-#auto-transcript.interim{color:var(–accent);}
-#auto-transcript.matched{color:var(–green);}
-#auto-transcript.alias  {color:var(–warn);}
-#auto-transcript.nomatch{color:var(–danger);}
-#auto-transcript.filtered{color:var(–text3);font-size:16px;font-weight:400;}
-#auto-transcript.ph     {color:var(–text3);font-size:16px;font-weight:400;}
-#auto-wave{display:flex;align-items:center;justify-content:center;gap:5px;height:40px;}
-.aw{width:5px;background:var(–accent);border-radius:4px;animation:awv 1s ease-in-out infinite;}
-.aw:nth-child(1){animation-delay:0s;}.aw:nth-child(2){animation-delay:.1s;}.aw:nth-child(3){animation-delay:.2s;}
-.aw:nth-child(4){animation-delay:.3s;}.aw:nth-child(5){animation-delay:.2s;}.aw:nth-child(6){animation-delay:.1s;}.aw:nth-child(7){animation-delay:0s;}
-@keyframes awv{0%,100%{height:5px;}50%{height:34px;}}
-#auto-sent-banner{width:100%;padding:14px;border-radius:12px;text-align:center;font-size:16px;font-weight:700;opacity:0;transition:opacity .3s;line-height:1.5;}
-#auto-sent-banner.show{opacity:1;}
-#auto-sent-banner.ok  {background:var(–green-l);color:var(–green);}
-#auto-sent-banner.warn{background:var(–warn-l);color:var(–warn);}
-#auto-stop-btn{margin-top:8px;background:var(–danger);color:#fff;border:none;border-radius:12px;font-family:var(–sans);font-size:15px;font-weight:700;padding:14px 36px;cursor:pointer;}
-#auto-stop-btn:active{opacity:.75;}
-
-/* TRANSCRIPT */
-#transcript-txt{font-size:28px;font-weight:900;text-align:center;word-break:break-all;line-height:1.2;padding:0 12px;transition:color .2s;color:var(–text3);}
-#transcript-txt.ph      {font-size:14px;font-weight:400;color:var(–text3);}
-#transcript-txt.interim {color:var(–accent);}
-#transcript-txt.matched {color:var(–green);}
-#transcript-txt.alias   {color:var(–warn);}
-#transcript-txt.nomatch {color:var(–danger);}
-#transcript-txt.filtered{font-size:14px;color:var(–text3);}
-
-#waveform{display:flex;align-items:center;justify-content:center;gap:5px;height:32px;opacity:0;transition:opacity .3s;}
-#waveform.active{opacity:1;}
-.wbar{width:4px;background:var(–accent);border-radius:4px;animation:wv 1s ease-in-out infinite;}
-.wbar:nth-child(1){animation-delay:0s;}.wbar:nth-child(2){animation-delay:.1s;}.wbar:nth-child(3){animation-delay:.2s;}
-.wbar:nth-child(4){animation-delay:.3s;}.wbar:nth-child(5){animation-delay:.2s;}.wbar:nth-child(6){animation-delay:.1s;}.wbar:nth-child(7){animation-delay:0s;}
-@keyframes wv{0%,100%{height:4px;}50%{height:26px;}}
-
-/* MIC BUTTON - 画面中央全体の巨大タップボタン */
-#mic-btn{
-width:100%;flex:1;min-height:240px;
-border-radius:20px;
-border:3px solid var(–border2);background:var(–white);
-cursor:pointer;
-display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
--webkit-user-select:none;user-select:none;
-transition:border-color .2s,background .2s;
-box-shadow:0 2px 12px rgba(0,0,0,.07);
-padding:20px;
+/* MODE SWITCHER */
+.mode-switcher{
+  display:flex;background:var(--bg);border:1.5px solid var(--border2);
+  border-radius:12px;padding:4px;gap:4px;
 }
-#mic-btn.rec{border-color:var(–danger);background:var(–danger-l);}
-#mic-btn.state-matched{border-color:var(–green);background:var(–green-l);}
-#mic-btn.state-alias  {border-color:var(–warn); background:var(–warn-l);}
-#mic-btn.state-nomatch{border-color:var(–danger);background:var(–danger-l);}
+.mode-btn{
+  flex:1;border:none;border-radius:9px;
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  padding:10px;cursor:pointer;
+  background:none;color:var(--text3);
+  transition:background .2s,color .2s;
+}
+.mode-btn.active{background:var(--white);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+
+/* TOGGLE TIMER BAR */
+#toggle-timer-wrap{
+  display:none;
+  flex-direction:column;gap:4px;
+}
+#toggle-timer-wrap.show{display:flex;}
+#toggle-timer-bar-bg{
+  height:6px;background:var(--border);border-radius:3px;overflow:hidden;
+}
+#toggle-timer-bar{
+  height:100%;background:var(--accent);border-radius:3px;
+  transition:width .5s linear;width:100%;
+}
+#toggle-timer-txt{
+  font-family:var(--mono);font-size:11px;color:var(--text3);text-align:right;
+}
+
+/* MIC BUTTON */
+#mic-btn{
+  width:100%;flex:1;min-height:200px;
+  border-radius:20px;
+  border:3px solid var(--border2);background:var(--white);
+  cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  -webkit-user-select:none;user-select:none;
+  transition:border-color .2s,background .2s;
+  box-shadow:0 2px 12px rgba(0,0,0,.07);
+  padding:20px;
+}
+#mic-btn.rec-momentary{border-color:var(--danger);background:var(--danger-l);}
+#mic-btn.rec-toggle   {border-color:var(--green); background:var(--green-l);}
+#mic-btn.state-matched{border-color:var(--green);background:var(--green-l);}
+#mic-btn.state-alias  {border-color:var(--warn); background:var(--warn-l);}
+#mic-btn.state-nomatch{border-color:var(--danger);background:var(--danger-l);}
 #mic-btn:active{opacity:.85;}
 #mic-icon{font-size:56px;line-height:1;transition:transform .2s;}
-#mic-btn.rec #mic-icon{transform:scale(1.1);}
-#mic-lbl{font-family:var(–mono);font-size:13px;font-weight:600;letter-spacing:.12em;color:var(–text3);text-transform:uppercase;}
-#mic-btn.rec #mic-lbl{color:var(–danger);}
-#transcript-txt{font-size:26px;font-weight:900;text-align:center;word-break:break-all;line-height:1.2;color:var(–text3);}
-#transcript-txt.ph     {font-size:14px;font-weight:400;color:var(–text3);}
-#transcript-txt.interim{color:var(–accent);}
-#transcript-txt.matched{color:var(–green);}
-#transcript-txt.alias  {color:var(–warn);}
-#transcript-txt.nomatch{color:var(–danger);}
-#transcript-txt.filtered{font-size:14px;color:var(–text3);}
+#mic-btn.rec-momentary #mic-icon,
+#mic-btn.rec-toggle    #mic-icon{transform:scale(1.1);}
+#transcript-txt{font-size:26px;font-weight:900;text-align:center;word-break:break-all;line-height:1.2;color:var(--text3);}
+#transcript-txt.ph     {font-size:14px;font-weight:400;color:var(--text3);}
+#transcript-txt.interim{color:var(--accent);}
+#transcript-txt.matched{color:var(--green);}
+#transcript-txt.alias  {color:var(--warn);}
+#transcript-txt.nomatch{color:var(--danger);}
+#transcript-txt.filtered{font-size:14px;color:var(--text3);}
+#mic-lbl{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;}
+#mic-btn.rec-momentary #mic-lbl{color:var(--danger);}
+#mic-btn.rec-toggle    #mic-lbl{color:var(--green);}
+
+/* WAVEFORM */
 #waveform{display:flex;align-items:center;justify-content:center;gap:5px;height:32px;opacity:0;transition:opacity .3s;}
 #waveform.active{opacity:1;}
-.wbar{width:4px;background:var(–accent);border-radius:4px;animation:wv 1s ease-in-out infinite;}
+.wbar{width:4px;background:var(--accent);border-radius:4px;animation:wv 1s ease-in-out infinite;}
 .wbar:nth-child(1){animation-delay:0s;}.wbar:nth-child(2){animation-delay:.1s;}.wbar:nth-child(3){animation-delay:.2s;}
 .wbar:nth-child(4){animation-delay:.3s;}.wbar:nth-child(5){animation-delay:.2s;}.wbar:nth-child(6){animation-delay:.1s;}.wbar:nth-child(7){animation-delay:0s;}
 @keyframes wv{0%,100%{height:4px;}50%{height:26px;}}
-.mic-hint{display:none;}
 
-/* カウントダウンリング */
-#countdown-ring-wrap{
-position:relative;width:130px;height:130px;
-display:flex;align-items:center;justify-content:center;
-}
-#countdown-ring{
-position:absolute;top:0;left:0;
-transform:rotate(-90deg);
-}
-#countdown-ring circle{
-fill:none;stroke:var(–border);stroke-width:4;
-}
-#countdown-ring .progress{
-stroke:var(–danger);
-stroke-dasharray:345;
-stroke-dashoffset:345;
-transition:stroke-dashoffset .1s linear;
-stroke-linecap:round;
-}
-
+/* FEEDBACK */
 #feedback{min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:700;text-align:center;opacity:0;transition:opacity .25s;line-height:1.4;}
 #feedback.show{opacity:1;}
-#feedback.fb-ok    {background:var(–green-l);color:var(–green);}
-#feedback.fb-warn  {background:var(–warn-l);color:var(–warn);}
-#feedback.fb-danger{background:var(–danger-l);color:var(–danger);}
-#feedback.fb-info  {background:var(–accent-l);color:var(–accent);}
+#feedback.fb-ok    {background:var(--green-l);color:var(--green);}
+#feedback.fb-warn  {background:var(--warn-l);color:var(--warn);}
+#feedback.fb-danger{background:var(--danger-l);color:var(--danger);}
+#feedback.fb-info  {background:var(--accent-l);color:var(--accent);}
 
+/* LOG */
 #log{display:flex;flex-direction:column;gap:8px;}
 .log-row{border-radius:10px;padding:10px 12px;animation:fi .25s forwards;opacity:0;border-left:4px solid transparent;}
 @keyframes fi{to{opacity:1;}}
-.log-row.ok      {background:var(–green-l); border-left-color:var(–green);}
-.log-row.alias   {background:var(–warn-l);  border-left-color:var(–warn);}
-.log-row.ng      {background:var(–danger-l);border-left-color:var(–danger);}
-.log-row.sys     {background:var(–bg);      border-left-color:var(–border2);}
-.log-row.filtered{background:var(–bg);      border-left-color:var(–border2);}
+.log-row.ok      {background:var(--green-l); border-left-color:var(--green);}
+.log-row.alias   {background:var(--warn-l);  border-left-color:var(--warn);}
+.log-row.ng      {background:var(--danger-l);border-left-color:var(--danger);}
+.log-row.sys     {background:var(--bg);      border-left-color:var(--border2);}
+.log-row.filtered{background:var(--bg);      border-left-color:var(--border2);}
 .log-main{display:flex;align-items:center;gap:8px;}
-.lt{font-family:var(–mono);font-size:11px;color:var(–text3);flex-shrink:0;}
+.lt{font-family:var(--mono);font-size:11px;color:var(--text3);flex-shrink:0;}
 .lw{font-size:15px;font-weight:900;}
-.lw.ok{color:var(–green);}.lw.alias{color:var(–warn);}.lw.ng{color:var(–danger);}.lw.sys,.lw.filtered{color:var(–text2);}
-.ls{font-family:var(–mono);font-size:11px;margin-left:auto;flex-shrink:0;font-weight:600;}
-.ls.ok{color:var(–green);}.ls.alias{color:var(–warn);}.ls.ng{color:var(–danger);}.ls.sys,.ls.filtered{color:var(–text3);}
-.log-sub{font-size:12px;color:var(–text2);margin-top:3px;}
-.log-sub .raw{color:var(–warn);font-weight:700;}
+.lw.ok{color:var(--green);}.lw.alias{color:var(--warn);}.lw.ng{color:var(--danger);}.lw.sys,.lw.filtered{color:var(--text2);}
+.ls{font-family:var(--mono);font-size:11px;margin-left:auto;flex-shrink:0;font-weight:600;}
+.ls.ok{color:var(--green);}.ls.alias{color:var(--warn);}.ls.ng{color:var(--danger);}.ls.sys,.ls.filtered{color:var(--text3);}
+.log-sub{font-size:12px;color:var(--text2);margin-top:3px;}
+.log-sub .raw{color:var(--warn);font-weight:700;}
 
 /* WORD CARDS */
-.word-card{background:var(–white);border:1.5px solid var(–border);border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+.word-card{background:var(--white);border:1.5px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
 .word-card-header{display:flex;align-items:center;gap:10px;padding:14px 12px 14px 14px;cursor:pointer;}
-.wch-name{flex:1;font-size:17px;font-weight:900;color:var(–text);}
-.cat-badge{font-family:var(–mono);font-size:10px;font-weight:600;border-radius:6px;padding:3px 8px;text-transform:uppercase;flex-shrink:0;}
-.cat-badge.med{background:var(–accent-l);color:var(–accent);}
-.cat-badge.rec{background:var(–warn-l);color:var(–warn);}
-.del-word-btn{background:none;border:none;color:var(–text3);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;}
-.del-word-btn:active{color:var(–danger);}
-.toggle-icon{color:var(–text3);font-size:14px;flex-shrink:0;transition:transform .2s;}
+.wch-name{flex:1;font-size:17px;font-weight:900;color:var(--text);}
+.cat-badge{font-family:var(--mono);font-size:10px;font-weight:600;border-radius:6px;padding:3px 8px;text-transform:uppercase;flex-shrink:0;}
+.cat-badge.med{background:var(--accent-l);color:var(--accent);}
+.cat-badge.rec{background:var(--warn-l);color:var(--warn);}
+.del-word-btn{background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;padding:2px 4px;flex-shrink:0;}
+.del-word-btn:active{color:var(--danger);}
+.toggle-icon{color:var(--text3);font-size:14px;flex-shrink:0;transition:transform .2s;}
 .toggle-icon.open{transform:rotate(180deg);}
-.pattern-area{display:none;border-top:1.5px solid var(–border);padding:12px 14px;background:var(–bg);}
+.pattern-area{display:none;border-top:1.5px solid var(--border);padding:12px 14px;background:var(--bg);}
 .pattern-area.open{display:block;}
-.pattern-label{font-family:var(–mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(–text3);text-transform:uppercase;margin-bottom:8px;}
+.pattern-label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
 .pattern-list{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;min-height:10px;}
-.pattern-chip{display:flex;align-items:center;gap:5px;background:var(–white);border:1.5px solid var(–border2);border-radius:20px;padding:5px 10px 5px 12px;font-size:13px;font-weight:700;color:var(–text);}
-.main-chip{font-family:var(–mono);font-size:9px;font-weight:600;color:var(–accent);background:var(–accent-l);border-radius:4px;padding:1px 5px;margin-right:2px;}
-.del-pat-btn{background:none;border:none;color:var(–text3);font-size:15px;cursor:pointer;padding:0 2px;line-height:1;}
-.del-pat-btn:active{color:var(–danger);}
+.pattern-chip{display:flex;align-items:center;gap:5px;background:var(--white);border:1.5px solid var(--border2);border-radius:20px;padding:5px 10px 5px 12px;font-size:13px;font-weight:700;color:var(--text);}
+.main-chip{font-family:var(--mono);font-size:9px;font-weight:600;color:var(--accent);background:var(--accent-l);border-radius:4px;padding:1px 5px;margin-right:2px;}
+.del-pat-btn{background:none;border:none;color:var(--text3);font-size:15px;cursor:pointer;padding:0 2px;line-height:1;}
+.del-pat-btn:active{color:var(--danger);}
 .pattern-add-row{display:flex;gap:8px;}
-.pattern-input{flex:1;background:var(–white);border:1.5px solid var(–border2);border-radius:8px;color:var(–text);font-family:var(–sans);font-size:14px;padding:9px 10px;outline:none;transition:border-color .2s;}
-.pattern-input:focus{border-color:var(–accent);}
-.btn-xs{background:var(–accent);color:#fff;border:none;border-radius:8px;font-family:var(–sans);font-size:12px;font-weight:700;padding:9px 14px;cursor:pointer;}
+.pattern-input{flex:1;background:var(--white);border:1.5px solid var(--border2);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;padding:9px 10px;outline:none;transition:border-color .2s;}
+.pattern-input:focus{border-color:var(--accent);}
+.btn-xs{background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:12px;font-weight:700;padding:9px 14px;cursor:pointer;}
 .btn-xs:active{opacity:.75;}
-.add-word-form{background:var(–white);border:1.5px solid var(–border);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
+.add-word-form{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
 .add-row{display:flex;gap:8px;margin-bottom:10px;}
-.add-row input{flex:1;background:var(–bg);border:1.5px solid var(–border2);border-radius:10px;color:var(–text);font-family:var(–sans);font-size:16px;font-weight:700;padding:11px 12px;outline:none;transition:border-color .2s;}
-.add-row input:focus{border-color:var(–accent);}
-.cat-select{background:var(–bg);border:1.5px solid var(–border2);border-radius:10px;color:var(–text);font-size:16px;padding:11px 10px;outline:none;}
-.btn-full{width:100%;background:var(–accent);color:#fff;border:none;border-radius:10px;font-family:var(–sans);font-size:14px;font-weight:700;padding:13px;cursor:pointer;transition:opacity .2s;margin-bottom:8px;display:block;}
+.add-row input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:16px;font-weight:700;padding:11px 12px;outline:none;transition:border-color .2s;}
+.add-row input:focus{border-color:var(--accent);}
+.cat-select{background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-size:16px;padding:11px 10px;outline:none;}
+.btn-full{width:100%;background:var(--accent);color:#fff;border:none;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:700;padding:13px;cursor:pointer;transition:opacity .2s;margin-bottom:8px;display:block;}
 .btn-full:active{opacity:.75;}
-.btn-full.danger{background:var(–danger);}
-.btn-full.outline{background:none;border:1.5px solid var(–border2);color:var(–text2);}
-.section-title{font-family:var(–mono);font-size:11px;font-weight:600;letter-spacing:.12em;color:var(–text3);text-transform:uppercase;margin-bottom:10px;}
-.empty-note{font-size:13px;color:var(–text3);text-align:center;padding:20px;}
+.btn-full.danger{background:var(--danger);}
+.btn-full.outline{background:none;border:1.5px solid var(--border2);color:var(--text2);}
+.section-title{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;color:var(--text3);text-transform:uppercase;margin-bottom:10px;}
+.empty-note{font-size:13px;color:var(--text3);text-align:center;padding:20px;}
+
+/* SETTINGS */
 .setting-row{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;}
-.setting-row label{font-family:var(–mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(–text3);text-transform:uppercase;}
-.setting-row select,.setting-row input[type=range]{background:var(–bg);border:1.5px solid var(–border2);border-radius:10px;color:var(–text);font-family:var(–mono);font-size:13px;padding:11px 12px;outline:none;width:100%;transition:border-color .2s;}
-.setting-row input[type=range]{padding:8px 12px;cursor:pointer;accent-color:var(–accent);}
+.setting-row label{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.1em;color:var(--text3);text-transform:uppercase;}
+.setting-row select,.setting-row input[type=range]{background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--mono);font-size:13px;padding:11px 12px;outline:none;width:100%;transition:border-color .2s;}
+.setting-row input[type=range]{padding:8px 12px;cursor:pointer;accent-color:var(--accent);}
 .range-row{display:flex;align-items:center;gap:10px;}
 .range-row input{flex:1;}
-.range-val{font-family:var(–mono);font-size:14px;font-weight:600;color:var(–accent);min-width:42px;text-align:right;}
-.info-box{background:var(–bg);border:1.5px solid var(–border);border-radius:10px;padding:14px;font-family:var(–mono);font-size:12px;line-height:2;color:var(–text2);}
-.info-box b{color:var(–accent);font-weight:700;}
-.info-box code{color:var(–text);background:var(–white);border:1px solid var(–border2);padding:1px 6px;border-radius:4px;}
-.key-display{background:var(–bg);border:1.5px solid var(–border2);border-radius:10px;padding:12px 14px;font-family:var(–mono);font-size:12px;color:var(–accent);word-break:break-all;letter-spacing:.04em;margin-top:8px;font-weight:600;}
+.range-val{font-family:var(--mono);font-size:14px;font-weight:600;color:var(--accent);min-width:42px;text-align:right;}
+.info-box{background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:14px;font-family:var(--mono);font-size:12px;line-height:2;color:var(--text2);}
+.info-box b{color:var(--accent);font-weight:700;}
+.info-box code{color:var(--text);background:var(--white);border:1px solid var(--border2);padding:1px 6px;border-radius:4px;}
+.key-display{background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;padding:12px 14px;font-family:var(--mono);font-size:12px;color:var(--accent);word-break:break-all;letter-spacing:.04em;margin-top:8px;font-weight:600;}
 .key-btns{display:flex;gap:8px;margin-top:10px;}
 .key-btns .btn-full{margin:0;flex:1;}
 .sens-bar{display:flex;gap:3px;align-items:center;margin-top:6px;}
-.sens-seg{height:8px;flex:1;border-radius:3px;background:var(–border);}
-.sens-seg.on{background:var(–accent);}
-.sens-label{display:flex;justify-content:space-between;font-family:var(–mono);font-size:10px;color:var(–text3);margin-top:3px;}
-#auto-banner{background:var(–accent);color:#fff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:700;cursor:pointer;}
-#auto-banner .ab-hint{font-size:11px;font-weight:400;opacity:.8;}
+.sens-seg{height:8px;flex:1;border-radius:3px;background:var(--border);}
+.sens-seg.on{background:var(--accent);}
+.sens-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:3px;}
 </style>
-
 </head>
 <body>
-
-<!-- AUTO OVERLAY -->
-
-<div id="auto-overlay">
-  <div id="countdown-wrap">
-    <div id="countdown-num">1</div>
-    <div id="countdown-label">録音開始まで…</div>
-  </div>
-  <div id="auto-rec-wrap">
-    <div id="auto-conn-banner">⏳ ラズパイに接続中… 接続後に送信します</div>
-    <div id="auto-status-badge" class="listening">● 聞き取り中</div>
-    <div id="auto-wave">
-      <div class="aw"></div><div class="aw"></div><div class="aw"></div>
-      <div class="aw"></div><div class="aw"></div><div class="aw"></div><div class="aw"></div>
-    </div>
-    <div id="auto-transcript" class="ph">話してください…</div>
-    <div id="auto-sent-banner"></div>
-  </div>
-  <button id="auto-return-btn" onclick="stopAutoMode()" style="display:none;margin-top:8px;background:var(--green);color:#fff;border:none;border-radius:12px;font-family:var(--sans);font-size:17px;font-weight:700;padding:18px 48px;cursor:pointer;box-shadow:0 4px 16px rgba(26,138,60,.3);">✓ 戻る</button>
-  <button id="auto-stop-btn" onclick="stopAutoMode()">■ 停止</button>
-</div>
 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="showTab('home')">🎤 音声</button>
@@ -266,8 +210,8 @@ stroke-linecap:round;
 </div>
 
 <!-- HOME -->
-
 <div id="page-home" class="page active">
+
   <div class="card">
     <div class="card-label">接続先</div>
     <div class="conn-row">
@@ -280,16 +224,26 @@ stroke-linecap:round;
     </div>
   </div>
 
-  <div id="auto-banner" onclick="startAutoMode()">
-    <div style="display:flex;align-items:center;gap:8px;">
-      <span>⚡ オートモード起動</span>
-      <span class="ab-hint">Siriショートカット用</span>
+  <!-- モード切替 -->
+  <div class="card">
+    <div class="card-label">録音モード</div>
+    <div class="mode-switcher">
+      <button class="mode-btn" id="mode-momentary" onclick="setMode('momentary')">⚡ モメンタリー</button>
+      <button class="mode-btn active" id="mode-toggle" onclick="setMode('toggle')">🔁 トグル</button>
     </div>
-    <span>▶</span>
+    <div style="margin-top:10px;font-family:var(--mono);font-size:11px;color:var(--text3);" id="mode-desc">
+      タップでON／設定時間後に自動停止
+    </div>
+    <!-- トグルタイマーバー -->
+    <div id="toggle-timer-wrap" style="margin-top:10px;">
+      <div id="toggle-timer-bar-bg">
+        <div id="toggle-timer-bar"></div>
+      </div>
+      <div id="toggle-timer-txt">--</div>
+    </div>
   </div>
 
-  <!-- 巨大タップボタン（transcript + waveform + mic統合） -->
-
+  <!-- 大きなマイクボタン -->
   <button id="mic-btn" onclick="toggleRec()">
     <div id="waveform">
       <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
@@ -301,6 +255,7 @@ stroke-linecap:round;
   </button>
 
   <div id="feedback"></div>
+
   <div class="card">
     <div class="card-label">送信ログ</div>
     <div id="log"></div>
@@ -308,7 +263,6 @@ stroke-linecap:round;
 </div>
 
 <!-- WORDS -->
-
 <div id="page-words" class="page">
   <div class="add-word-form">
     <div class="card-label">ワード追加</div>
@@ -326,8 +280,8 @@ stroke-linecap:round;
 </div>
 
 <!-- SETTINGS -->
-
 <div id="page-settings" class="page">
+
   <div class="card">
     <div class="card-label">🎚 認識感度</div>
     <div class="setting-row">
@@ -341,20 +295,29 @@ stroke-linecap:round;
       <div class="sens-label"><span>雑音を通しやすい</span><span>雑音を通しにくい</span></div>
     </div>
     <div class="setting-row">
-      <label>自動送信までの時間</label>
+      <label>モメンタリー自動送信（秒）</label>
       <div class="range-row">
-        <input type="range" id="auto-send-sec" min="1" max="5" step="1" value="2"
-          oninput="updateRangeVal('auto-send-sec','auto-send-val','秒')">
-        <span class="range-val" id="auto-send-val">2秒</span>
+        <input type="range" id="momentary-sec" min="1" max="5" step="1" value="2"
+          oninput="updateRangeVal('momentary-sec','momentary-sec-val','秒')">
+        <span class="range-val" id="momentary-sec-val">2秒</span>
       </div>
-      <div class="sens-bar" id="sens-bar-autosend"></div>
-      <div class="sens-label"><span>素早く送信</span><span>じっくり認識</span></div>
+    </div>
+    <div class="setting-row">
+      <label>トグル自動停止（秒）</label>
+      <div class="range-row">
+        <input type="range" id="toggle-sec" min="10" max="120" step="5" value="30"
+          oninput="updateRangeVal('toggle-sec','toggle-sec-val','秒')">
+        <span class="range-val" id="toggle-sec-val">30秒</span>
+      </div>
     </div>
     <div class="info-box" style="margin-top:4px;">
-      <b>録音ボタン動作</b><br>
-      タップ → 録音開始<br>
-      設定秒後 → 自動判定・送信<br>
-      録音中にタップ → 即時送信
+      <b>モメンタリー</b><br>
+      タップ → 設定秒後に自動判定・送信<br>
+      録音中タップ → 即時送信<br><br>
+      <b>トグル</b><br>
+      タップでON → ずっと聞き続ける<br>
+      マッチしたら即送信してまた待機<br>
+      設定時間後 or タップで停止
     </div>
   </div>
 
@@ -371,34 +334,11 @@ stroke-linecap:round;
   </div>
 
   <div class="card">
-    <div class="card-label">⚡ オートモード設定</div>
-    <div class="info-box" style="margin-bottom:10px;">
-      URLに <code>?auto=1</code> を付けて開くと自動起動。<br>
-      録音はすぐ開始、送信は接続完了後に行います。
-    </div>
-    <div class="setting-row">
-      <label>送信後の待機時間</label>
-      <select id="auto-wait">
-        <option value="800">0.8秒（速い）</option>
-        <option value="1500" selected>1.5秒（標準）</option>
-        <option value="2500">2.5秒（ゆっくり）</option>
-      </select>
-    </div>
-    <div class="setting-row">
-      <label>ビープ音</label>
-      <select id="beep-mode">
-        <option value="on" selected>オン</option>
-        <option value="off">オフ</option>
-      </select>
-    </div>
-  </div>
-
-  <div class="card">
     <div class="card-label">接続方法</div>
     <div class="info-box">
       <b>同一Wi-Fi</b><br><code>ws://ラズパイIP:8765</code><br><br>
       <b>外出先（ngrok）</b><br>
-      ラズパイで: <code>ngrok http 8765 --host-header=localhost</code><br>
+      ラズパイで: <code>ngrok http 8765</code><br>
       アプリに: <code>wss://xxx.ngrok-free.app</code>
     </div>
   </div>
@@ -424,7 +364,7 @@ stroke-linecap:round;
 
   <div class="card">
     <div class="card-label">アプリ情報</div>
-    <div class="info-box"><b>MedVoice Remote v9.0</b><br>Safari → 共有 → ホーム画面に追加</div>
+    <div class="info-box"><b>MedVoice Remote v10.0</b><br>Safari → 共有 → ホーム画面に追加</div>
   </div>
 </div>
 
@@ -437,27 +377,20 @@ function flashEl(el){ el.style.borderColor='var(--danger)'; setTimeout(function(
 function getSetting(key,def){ return localStorage.getItem(key)||def; }
 function setSetting(key,val){ localStorage.setItem(key,val); }
 function getMinChars()    { return parseInt(getSetting('min_chars','2')); }
-function getAutoSendSec() { return parseInt(getSetting('auto_send_sec','2')); }
+function getMomentarySec(){ return parseInt(getSetting('momentary_sec','2')); }
+function getToggleSec()   { return parseInt(getSetting('toggle_sec','30')); }
 
 function updateRangeVal(id,valId,suffix){
   var v=document.getElementById(id).value;
   document.getElementById(valId).textContent=v+suffix;
-  var key=id.replace(/-/g,'_');
-  setSetting(key,v);
-  updateSensBar(id);
-  // ヒントテキスト更新
-  if(id==='auto-send-sec'){
-    var hint = document.getElementById('mic-hint-txt');
-    if(hint) hint.innerHTML='タップで録音開始<br>録音後'+v+'秒で自動送信';
-  }
+  var key=id.replace(/-/g,'_'); setSetting(key,v);
+  if(id==='min-chars') updateSensBar('min-chars');
 }
 function updateSensBar(id){
   var val=parseInt(document.getElementById(id).value);
   var min=parseInt(document.getElementById(id).min);
   var max=parseInt(document.getElementById(id).max);
-  var barMap={'min-chars':'sens-bar-noise','rec-timeout':'sens-bar-timeout','auto-send-sec':'sens-bar-autosend'};
-  var barId=barMap[id]; if(!barId) return;
-  var bar=document.getElementById(barId); if(!bar) return;
+  var bar=document.getElementById('sens-bar-noise'); if(!bar) return;
   var html='';
   for(var i=min;i<=max;i++) html+='<div class="sens-seg'+(i<=val?' on':'')+'"></div>';
   bar.innerHTML=html;
@@ -470,7 +403,6 @@ function getAudioCtx(){
   return audioCtx;
 }
 function beep(freq,dur,vol){
-  if(getSetting('beep_mode','on')==='off') return;
   try{
     var ctx=getAudioCtx(),osc=ctx.createOscillator(),gain=ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
@@ -483,6 +415,7 @@ function beep(freq,dur,vol){
 function beepStart(){ beep(880,0.12,0.4); }
 function beepSent() { beep(660,0.18,0.35); }
 function beepFail() { beep(300,0.25,0.3); }
+function beepStop()  { beep(440,0.2,0.3); }
 
 // ─── DEVICE KEY ───────────────────────────────────────
 function genKey(){
@@ -507,37 +440,71 @@ function copyKey(){
 // ─── DEFAULT WORDS ────────────────────────────────────
 function makeDefaultWords(){
   return [
-    {id:uid(),word:'挿管',      cat:'med',patterns:['挿管','そうかん','送還','早管']},
-    {id:uid(),word:'抜管',      cat:'med',patterns:['抜管','ばっかん','抜缶']},
-    {id:uid(),word:'心停止',    cat:'med',patterns:['心停止','しんていし']},
-    {id:uid(),word:'除細動',    cat:'med',patterns:['除細動','じょさいどう']},
-    {id:uid(),word:'採血',      cat:'med',patterns:['採血','さいけつ']},
-    {id:uid(),word:'点滴',      cat:'med',patterns:['点滴','てんてき']},
-    {id:uid(),word:'静脈ライン',cat:'med',patterns:['静脈ライン','静脈ライン挿入','静脈ラン']},
-    {id:uid(),word:'脊椎麻酔',  cat:'med',patterns:['脊椎麻酔','せきついますい','脊髄麻酔']},
-    {id:uid(),word:'気道確保',  cat:'med',patterns:['気道確保','きどうかくほ']},
-    {id:uid(),word:'記録',      cat:'rec',patterns:['記録','きろく']},
-    {id:uid(),word:'保存',      cat:'rec',patterns:['保存','ほぞん']},
-    {id:uid(),word:'開始',      cat:'rec',patterns:['開始','かいし','スタート']},
-    {id:uid(),word:'終了',      cat:'rec',patterns:['終了','しゅうりょう','エンド']},
+    // ── シーケンシャルイベント ──
+    {id:uid(),word:'入室時確認',      cat:'med',patterns:['入室時確認','入室確認','にゅうしつじかくにん','にゅうしつかくにん']},
+    {id:uid(),word:'退室時確認',      cat:'med',patterns:['退室時確認','退室確認','たいしつじかくにん','たいしつかくにん']},
+    {id:uid(),word:'挿管',            cat:'med',patterns:['挿管','そうかん','送還','早管','挿管する']},
+    {id:uid(),word:'抜管',            cat:'med',patterns:['抜管','ばっかん','抜缶','抜管する']},
+    {id:uid(),word:'麻酔開始',        cat:'med',patterns:['麻酔開始','ますいかいし','麻酔を開始','麻酔開始する']},
+    {id:uid(),word:'麻酔終了',        cat:'med',patterns:['麻酔終了','ますいしゅうりょう','麻酔を終了','麻酔終了する']},
+    {id:uid(),word:'Vライン挿入',     cat:'med',patterns:['Vライン挿入','ブイライン挿入','静脈ライン挿入','静脈ラン挿入','ブイラインそうにゅう','V ライン挿入']},
+    {id:uid(),word:'Vライン抜去',     cat:'med',patterns:['Vライン抜去','ブイライン抜去','静脈ライン抜去','ブイラインばっきょ']},
+    {id:uid(),word:'Aライン挿入',     cat:'med',patterns:['Aライン挿入','エーライン挿入','動脈ライン挿入','エーラインそうにゅう','A ライン挿入']},
+    {id:uid(),word:'Aライン抜去',     cat:'med',patterns:['Aライン抜去','エーライン抜去','動脈ライン抜去','エーラインばっきょ']},
+    {id:uid(),word:'動脈圧測定開始',  cat:'med',patterns:['動脈圧測定開始','どうみゃくあつそくていかいし','動脈圧開始']},
+    {id:uid(),word:'動脈圧測定終了',  cat:'med',patterns:['動脈圧測定終了','どうみゃくあつそくていしゅうりょう','動脈圧終了']},
+    {id:uid(),word:'手術開始',        cat:'med',patterns:['手術開始','しゅじゅつかいし','手術を開始','手術開始する']},
+    {id:uid(),word:'手術終了',        cat:'med',patterns:['手術終了','しゅじゅつしゅうりょう','手術を終了','手術終了する']},
+    {id:uid(),word:'分離肺換気開始',  cat:'med',patterns:['分離肺換気開始','ぶんりはいかんきかいし','分離換気開始']},
+    {id:uid(),word:'分離肺換気終了',  cat:'med',patterns:['分離肺換気終了','ぶんりはいかんきしゅうりょう','分離換気終了']},
+    {id:uid(),word:'気腹開始',        cat:'med',patterns:['気腹開始','きふくかいし','気腹を開始']},
+    {id:uid(),word:'気腹終了',        cat:'med',patterns:['気腹終了','きふくしゅうりょう','気腹を終了']},
+    {id:uid(),word:'硬膜外麻酔（胸）',cat:'med',patterns:['硬膜外麻酔（胸）','硬膜外麻酔胸','こうまくがいますいきょう','胸部硬膜外麻酔','胸の硬膜外']},
+    {id:uid(),word:'硬膜外麻酔（腰）',cat:'med',patterns:['硬膜外麻酔（腰）','硬膜外麻酔腰','こうまくがいますいこし','腰部硬膜外麻酔','腰の硬膜外']},
+    {id:uid(),word:'脊椎麻酔',        cat:'med',patterns:['脊椎麻酔','脊髄麻酔','せきついますい','せきずいますい','脊椎']},
+    {id:uid(),word:'神経ブロック',    cat:'med',patterns:['神経ブロック','しんけいぶろっく','神経ブロックする']},
+    {id:uid(),word:'CV挿入',          cat:'med',patterns:['CV挿入','シーブイ挿入','中心静脈挿入','シーブイそうにゅう','CV 挿入']},
+    {id:uid(),word:'帝王切開',        cat:'med',patterns:['帝王切開','ていおうせっかい','帝王切開する']},
+    {id:uid(),word:'肺動脈圧測定開始',cat:'med',patterns:['肺動脈圧測定開始','はいどうみゃくあつそくていかいし','肺動脈圧開始']},
+    {id:uid(),word:'肺動脈圧測定終了',cat:'med',patterns:['肺動脈圧測定終了','はいどうみゃくあつそくていしゅうりょう','肺動脈圧終了']},
+    {id:uid(),word:'胃管挿入',        cat:'med',patterns:['胃管挿入','いかんそうにゅう','胃管を挿入','胃管挿入する']},
+    {id:uid(),word:'胃管抜去',        cat:'med',patterns:['胃管抜去','いかんばっきょ','胃管を抜去']},
+    {id:uid(),word:'TEE挿入',         cat:'med',patterns:['TEE挿入','ティーイーイー挿入','経食道エコー挿入','ティーイーイーそうにゅう']},
+    {id:uid(),word:'TEE抜去',         cat:'med',patterns:['TEE抜去','ティーイーイー抜去','経食道エコー抜去','ティーイーイーばっきょ']},
+    {id:uid(),word:'術後鎮痛',        cat:'med',patterns:['術後鎮痛','じゅつごちんつう','術後の鎮痛']},
+    {id:uid(),word:'麻酔科リマークス',cat:'rec',patterns:['麻酔科リマークス','ますいかリマークス','麻酔科コメント','リマークス']},
+    {id:uid(),word:'麻酔導入終了',    cat:'med',patterns:['麻酔導入終了','ますいどうにゅうしゅうりょう','導入終了','麻酔導入完了']},
+    {id:uid(),word:'退室時バイタル',  cat:'rec',patterns:['退室時バイタル','たいしつじバイタル','退室バイタル','退室時のバイタル']},
+    // ── 薬剤 ──
+    {id:uid(),word:'プロポフォール',  cat:'med',patterns:['プロポフォール','ぷろぽふぉーる','プロポ','プロポフォール投与']},
+    {id:uid(),word:'ネオシネジン',    cat:'med',patterns:['ネオシネジン','ねおしねじん','ネオシネ','フェニレフリン']},
+    {id:uid(),word:'エフェドリン',    cat:'med',patterns:['エフェドリン','えふぇどりん','エフェド']},
+    {id:uid(),word:'デキサート',      cat:'med',patterns:['デキサート','でぃきさーと','デキサ','デキサメタゾン']},
+    {id:uid(),word:'オンダンセトロン',cat:'med',patterns:['オンダンセトロン','おんだんせとろん','オンダンセ','ゾフラン']},
+    {id:uid(),word:'スガマデクス',    cat:'med',patterns:['スガマデクス','すがまでくす','スガマ','ブリディオン']},
+    {id:uid(),word:'レミフェンタニル',cat:'med',patterns:['レミフェンタニル','れみふぇんたにる','レミフェン','レミフェンタ','アルチバ']},
+    {id:uid(),word:'ロクロニウム',    cat:'med',patterns:['ロクロニウム','ろくろにうむ','ロクロニ','エスメロン']},
   ];
 }
 
 // ─── STATE ────────────────────────────────────────────
-var words     = loadWords();
-var ws        = null;
-var recog     = null;
-var isRec     = false;
-var lastTxt   = '';
-var lastHit   = null;
-var matchMode = getSetting('matchMode','partial');
-var autoMode  = false;
-var autoRecog = null;
-var autoLoop  = true;
-var recTimer  = null;
-var autoSendTimer = null;  // 自動送信タイマー
-var ringTimer = null;      // リングアニメタイマー
+var words      = loadWords();
+var ws         = null;
+var recog      = null;
+var isRec      = false;
+var lastTxt    = '';
+var lastHit    = null;
+var matchMode  = getSetting('matchMode','partial');
+var recMode    = 'toggle';   // 'momentary' or 'toggle'
 var pendingHit = null;
+
+// モメンタリー用
+var autoSendTimer = null;
+
+// トグル用
+var toggleTimer    = null;
+var toggleInterval = null;
+var toggleEndTime  = 0;
 
 function loadWords(){
   try{ var s=localStorage.getItem('medwords_v3'); if(s){ var d=JSON.parse(s); if(Array.isArray(d)&&d.length>0) return d; } }catch(e){}
@@ -545,6 +512,22 @@ function loadWords(){
 }
 function saveWords(){ localStorage.setItem('medwords_v3',JSON.stringify(words)); }
 function isFiltered(txt){ return txt.trim().length < getMinChars(); }
+
+// ─── MODE ─────────────────────────────────────────────
+function setMode(mode){
+  recMode = mode;
+  setSetting('rec_mode', mode);
+  document.getElementById('mode-momentary').classList.toggle('active', mode==='momentary');
+  document.getElementById('mode-toggle').classList.toggle('active', mode==='toggle');
+  var desc = document.getElementById('mode-desc');
+  if(mode==='momentary'){
+    desc.textContent = 'タップ → '+getMomentarySec()+'秒後に自動送信';
+  } else {
+    desc.textContent = 'タップでON／'+getToggleSec()+'秒後に自動停止';
+  }
+  // 録音中なら停止
+  if(isRec) stopRec();
+}
 
 // ─── TABS ─────────────────────────────────────────────
 function showTab(name){
@@ -555,31 +538,6 @@ function showTab(name){
   document.querySelectorAll('.tab-btn')[idx].classList.add('active');
   if(name==='words')    renderWords();
   if(name==='settings') initSettings();
-}
-
-// ─── COUNTDOWN RING ───────────────────────────────────
-var ringInterval = null;
-var ringCircumference = 345; // 2πr ≈ 2*3.14159*55
-
-function startRing(sec){
-  var progress = document.querySelector('#countdown-ring .progress');
-  if(!progress) return;
-  progress.style.strokeDashoffset = ringCircumference;
-  var elapsed = 0;
-  var interval = 50;
-  clearInterval(ringInterval);
-  ringInterval = setInterval(function(){
-    elapsed += interval;
-    var ratio = elapsed / (sec * 1000);
-    if(ratio >= 1){ ratio = 1; clearInterval(ringInterval); }
-    progress.style.strokeDashoffset = ringCircumference * (1 - ratio);
-  }, interval);
-}
-
-function stopRing(){
-  clearInterval(ringInterval);
-  var progress = document.querySelector('#countdown-ring .progress');
-  if(progress) progress.style.strokeDashoffset = ringCircumference;
 }
 
 // ─── WEBSOCKET ────────────────────────────────────────
@@ -595,9 +553,7 @@ function connectWS(url){
     localStorage.setItem('ws_url',url);
     if(pendingHit){
       doSend(pendingHit);
-      if(autoMode) showAutoSentBanner(pendingHit);
-      pendingHit = null;
-      document.getElementById('auto-conn-banner').classList.remove('show');
+      pendingHit=null;
     }
   };
   ws.onclose=function(){ setStatus('','切断'); addLog({type:'sys',status:'切断',ok:false}); };
@@ -607,7 +563,7 @@ function setStatus(cls,txt){
   document.getElementById('status-dot').className=cls;
   document.getElementById('status-txt').textContent=txt;
 }
-function isConnected(){ return ws && ws.readyState === WebSocket.OPEN; }
+function isConnected(){ return ws && ws.readyState===WebSocket.OPEN; }
 function doSend(hitObj){
   if(!isConnected()) return false;
   ws.send(JSON.stringify({word:hitObj.word,raw:hitObj.raw,matched_by:hitObj.isAlias?'alias':'exact',key:deviceKey}));
@@ -617,138 +573,13 @@ function doSend(hitObj){
 function sendWord(hitObj){
   if(isConnected()){
     doSend(hitObj);
-    if(!autoMode){
-      if(hitObj.isAlias){ showFB('⚠ 誤変換経由\n「'+hitObj.raw+'」→「'+hitObj.word+'」','warn'); }
-      else              { showFB('✓ '+hitObj.word+' 送信','ok'); }
-    }
+    if(hitObj.isAlias){ showFB('⚠ 誤変換経由\n「'+hitObj.raw+'」→「'+hitObj.word+'」','warn'); }
+    else              { showFB('✓ '+hitObj.word+' 送信','ok'); }
     beepSent();
   } else {
-    pendingHit = hitObj;
+    pendingHit=hitObj;
     addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:false,status:'接続待ち'});
-    if(!autoMode){ showFB('⏳ 接続後に送信: 「'+hitObj.word+'」','info'); }
-    if(autoMode){
-      var banner=document.getElementById('auto-conn-banner');
-      banner.textContent='⏳ 接続中… 「'+hitObj.word+'」を接続後に送信します';
-      banner.classList.add('show');
-    }
-  }
-}
-
-// ─── TAP REC（メインボタン） ──────────────────────────
-function toggleRec(){
-  if(isRec){
-    // 録音中にタップ → 即時送信
-    clearTimeout(autoSendTimer); stopRing();
-    stopAndJudge();
-  } else {
-    // 録音開始
-    recStart_tap();
-  }
-}
-
-function recStart_tap(){
-  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ alert('音声認識非対応\niOS Safariを使ってください'); return; }
-  try{ getAudioCtx().resume(); }catch(e2){}
-
-  recog=new SR();
-  recog.lang='ja-JP';
-  recog.interimResults=true;
-  recog.maxAlternatives=1;
-  recog.continuous=true;
-
-  recog.onstart=function(){
-    isRec=true; lastTxt=''; lastHit=null;
-    document.getElementById('mic-btn').classList.add('rec');
-    document.getElementById('waveform').classList.add('active');
-    document.getElementById('mic-lbl').textContent='TAP→送信';
-    document.getElementById('mic-icon').textContent='⏹';
-    setTranscript('','interim');
-    beepStart();
-
-    // カウントダウンリング開始
-    var sec = getAutoSendSec();
-    startRing(sec);
-
-    // 自動送信タイマー
-    autoSendTimer = setTimeout(function(){
-      if(isRec){ stopRing(); stopAndJudge(); }
-    }, sec * 1000);
-  };
-
-  recog.onresult=function(ev){
-    var interim='',final='';
-    for(var i=ev.resultIndex;i<ev.results.length;i++){
-      var t=ev.results[i][0].transcript;
-      if(ev.results[i].isFinal) final+=t; else interim+=t;
-    }
-    var cur=(final||interim).trim(); if(cur) lastTxt=cur;
-    if(isFiltered(cur)){ setTranscript(cur,'filtered'); }
-    else{
-      var hit=matchWord(cur); lastHit=hit;
-      if(hit){ setTranscript(hit.word,hit.isAlias?'alias':'matched'); }
-      else   { setTranscript(cur,'interim'); }
-    }
-  };
-
-  recog.onerror=function(ev){
-    clearTimeout(autoSendTimer); stopRing();
-    addLog({type:'sys',status:'MIC:'+ev.error,ok:false});
-    resetMicBtn();
-  };
-
-  recog.onend=function(){
-    // タイマーで止まった場合はstopAndJudgeが呼ばれてるのでここでは何もしない
-  };
-
-  recog.start();
-}
-
-function resetMicBtn(){
-  isRec=false;
-  clearTimeout(autoSendTimer); stopRing();
-  document.getElementById('mic-btn').classList.remove('rec');
-  document.getElementById('waveform').classList.remove('active');
-  document.getElementById('mic-lbl').textContent='TAP';
-  document.getElementById('mic-icon').textContent='🎤';
-}
-
-function stopAndJudge(){
-  var txt = lastTxt;
-  var hit = lastHit;
-
-  // recog停止
-  if(recog){ try{ recog.stop(); }catch(e){} recog=null; }
-  resetMicBtn();
-
-  if(!txt){ setTranscript('',''); return; }
-  if(isFiltered(txt)){
-    setTranscript(txt,'filtered');
-    showFB('— 短すぎてフィルターしました','info');
-    addLog({type:'filtered',word:txt,ok:false,status:'フィルター'});
-    return;
-  }
-  var h = hit || matchWord(txt);
-  if(h){ setTranscript(h.word,h.isAlias?'alias':'matched'); sendWord(h); }
-  else { setTranscript(txt,'nomatch'); showFB('✗ 一致なし','danger'); beepFail(); addLog({type:'send',word:txt,raw:txt,isAlias:false,ok:false,status:'不一致'}); }
-}
-
-function setTranscript(t,mode){
-  var btn=document.getElementById('mic-btn');
-  var el =document.getElementById('transcript-txt');
-  // ボタンの状態クラスをリセット
-  btn.classList.remove('state-matched','state-alias','state-nomatch');
-  el.className='';
-  if(!t){
-    el.textContent='タップで録音開始'; el.classList.add('ph');
-  } else {
-    el.textContent=t;
-    if(mode){
-      el.classList.add(mode);
-      if(mode==='matched')  btn.classList.add('state-matched');
-      else if(mode==='alias')    btn.classList.add('state-alias');
-      else if(mode==='nomatch')  btn.classList.add('state-nomatch');
-    }
+    showFB('⏳ 接続後に送信: 「'+hitObj.word+'」','info');
   }
 }
 
@@ -768,85 +599,213 @@ function matchWord(transcript){
   return {word:best.word,raw:t,matchedPat:bestPat,isAlias:bestIsAlias};
 }
 
-// ─── AUTO MODE ────────────────────────────────────────
-function startAutoMode(){
-  autoMode=true; autoLoop=true; pendingHit=null;
-  document.getElementById('auto-overlay').classList.add('show');
-  document.getElementById('countdown-wrap').style.display='flex';
-  document.getElementById('auto-rec-wrap').classList.remove('show');
-  document.getElementById('auto-conn-banner').classList.remove('show');
-  document.getElementById('auto-return-btn').style.display='none';
-  document.getElementById('auto-stop-btn').style.display='block';
+// ─── TOGGLE TIMER UI ──────────────────────────────────
+function startToggleTimerUI(){
+  var sec = getToggleSec();
+  toggleEndTime = Date.now() + sec*1000;
+  document.getElementById('toggle-timer-wrap').classList.add('show');
+  document.getElementById('toggle-timer-bar').style.width='100%';
+
+  clearInterval(toggleInterval);
+  toggleInterval = setInterval(function(){
+    var remaining = Math.max(0, toggleEndTime - Date.now());
+    var ratio = remaining / (sec*1000);
+    document.getElementById('toggle-timer-bar').style.width = (ratio*100)+'%';
+    document.getElementById('toggle-timer-txt').textContent = Math.ceil(remaining/1000)+'秒';
+    if(remaining <= 0){
+      clearInterval(toggleInterval);
+    }
+  }, 200);
+}
+function stopToggleTimerUI(){
+  clearInterval(toggleInterval);
+  document.getElementById('toggle-timer-wrap').classList.remove('show');
+  document.getElementById('toggle-timer-bar').style.width='100%';
+  document.getElementById('toggle-timer-txt').textContent='--';
+}
+
+// ─── REC CONTROL ──────────────────────────────────────
+function toggleRec(){
   try{ getAudioCtx().resume(); }catch(e){}
-  var n=document.getElementById('countdown-num');
-  n.textContent='1'; n.style.animation='none';
-  setTimeout(function(){ n.style.animation=''; },10);
-  setTimeout(function(){
-    document.getElementById('countdown-wrap').style.display='none';
-    document.getElementById('auto-rec-wrap').classList.add('show');
-    beepStart(); autoListen();
-  },1000);
+  if(isRec){
+    stopRec();
+  } else {
+    startRec();
+  }
 }
 
-function stopAutoMode(){
-  autoMode=false; autoLoop=false; pendingHit=null;
-  if(autoRecog){ try{ autoRecog.stop(); }catch(e){} autoRecog=null; }
-  clearTimeout(recTimer);
-  document.getElementById('auto-overlay').classList.remove('show');
-  document.getElementById('auto-conn-banner').classList.remove('show');
-}
-
-function autoListen(){
-  if(!autoLoop) return;
+function startRec(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){ stopAutoMode(); alert('音声認識非対応'); return; }
-  setAutoStatus('listening','● 聞き取り中');
-  setAutoTranscript('話してください…','ph');
-  autoRecog=new SR();
-  autoRecog.lang='ja-JP'; autoRecog.interimResults=true;
-  autoRecog.maxAlternatives=1; autoRecog.continuous=false;
-  var sent=false,lastAutoTxt='',lastAutoHit=null;
-  recTimer=setTimeout(function(){
-    if(!sent&&autoLoop){ if(autoRecog){ try{ autoRecog.stop(); }catch(e){} } }
-  }, parseInt(getSetting('rec_timeout','4'))*1000);
-  autoRecog.onresult=function(ev){
-    clearTimeout(recTimer);
+  if(!SR){ alert('音声認識非対応\niOS Safariを使ってください'); return; }
+
+  recog=new SR();
+  recog.lang='ja-JP';
+  recog.interimResults=true;
+  recog.maxAlternatives=1;
+  recog.continuous=true;
+
+  recog.onstart=function(){
+    isRec=true; lastTxt=''; lastHit=null;
+    beepStart();
+    document.getElementById('waveform').classList.add('active');
+
+    if(recMode==='momentary'){
+      document.getElementById('mic-btn').classList.add('rec-momentary');
+      document.getElementById('mic-lbl').textContent='TAP→即時送信';
+      document.getElementById('mic-icon').textContent='⏹';
+      setTranscript('','interim');
+      // 自動送信タイマー
+      clearTimeout(autoSendTimer);
+      autoSendTimer = setTimeout(function(){
+        if(isRec) stopRec();
+      }, getMomentarySec()*1000);
+
+    } else {
+      // toggle
+      document.getElementById('mic-btn').classList.add('rec-toggle');
+      document.getElementById('mic-lbl').textContent='TAP→停止';
+      document.getElementById('mic-icon').textContent='⏹';
+      setTranscript('話してください…','ph');
+      startToggleTimerUI();
+      // 自動停止タイマー
+      clearTimeout(toggleTimer);
+      toggleTimer = setTimeout(function(){
+        if(isRec){ beepStop(); stopRec(); }
+      }, getToggleSec()*1000);
+    }
+  };
+
+  recog.onresult=function(ev){
     var interim='',final='';
     for(var i=ev.resultIndex;i<ev.results.length;i++){
       var t=ev.results[i][0].transcript;
       if(ev.results[i].isFinal) final+=t; else interim+=t;
     }
-    var cur=(final||interim).trim(); if(cur) lastAutoTxt=cur;
-    if(isFiltered(cur)){ setAutoStatus('filtered','— フィルター'); setAutoTranscript('「'+cur+'」は短すぎます','filtered'); }
-    else{ var hit=matchWord(cur); lastAutoHit=hit; if(hit){ setAutoTranscript(hit.word,hit.isAlias?'alias':'matched'); setAutoStatus(hit.isAlias?'alias':'matched',hit.isAlias?'⚠ 誤変換マッチ':'✓ マッチ'); }else{ setAutoTranscript(cur,'interim'); } }
-    if(final&&!sent){
-      sent=true;
-      var h=lastAutoHit||(!isFiltered(lastAutoTxt)?matchWord(lastAutoTxt):null);
-      if(h){ sendWord(h); if(isConnected()) showAutoSentBanner(h); scheduleNextListen(); }
-      else{ if(isFiltered(lastAutoTxt)){ addLog({type:'filtered',word:lastAutoTxt,ok:false,status:'フィルター'}); }else{ beepFail(); setAutoStatus('nomatch','✗ 一致なし'); addLog({type:'send',word:lastAutoTxt,raw:lastAutoTxt,isAlias:false,ok:false,status:'不一致'}); } scheduleNextListen(); }
+    var cur=(final||interim).trim();
+    if(cur) lastTxt=cur;
+
+    if(isFiltered(cur)){
+      setTranscript(cur,'filtered');
+      return;
+    }
+
+    var hit=matchWord(cur);
+    lastHit=hit;
+
+    if(recMode==='toggle'){
+      // トグル：finalで確定したワードがあれば即送信してリセット
+      if(final && !isFiltered(final)){
+        var fhit=matchWord(final);
+        if(fhit){
+          setTranscript(fhit.word, fhit.isAlias?'alias':'matched');
+          sendWord(fhit);
+          // リセットして次の発話を待つ
+          lastTxt=''; lastHit=null;
+          setTimeout(function(){
+            setTranscript('話してください…','ph');
+          }, 1000);
+        } else {
+          setTranscript(final,'nomatch');
+          beepFail();
+          addLog({type:'send',word:final,raw:final,isAlias:false,ok:false,status:'不一致'});
+          setTimeout(function(){
+            setTranscript('話してください…','ph');
+          }, 1000);
+        }
+      } else {
+        if(hit){ setTranscript(hit.word,hit.isAlias?'alias':'matched'); }
+        else   { setTranscript(cur,'interim'); }
+      }
+    } else {
+      // モメンタリー：表示だけ更新
+      if(hit){ setTranscript(hit.word,hit.isAlias?'alias':'matched'); }
+      else   { setTranscript(cur,'interim'); }
     }
   };
-  autoRecog.onerror=function(ev){ clearTimeout(recTimer); if(ev.error==='no-speech'){ if(autoLoop) autoListen(); return; } addLog({type:'sys',status:'MIC:'+ev.error,ok:false}); scheduleNextListen(); };
-  autoRecog.onend  =function(){ clearTimeout(recTimer); if(!sent&&autoLoop){ var h=lastAutoHit||(lastAutoTxt&&!isFiltered(lastAutoTxt)?matchWord(lastAutoTxt):null); if(h&&!sent){ sent=true; sendWord(h); if(isConnected()) showAutoSentBanner(h); scheduleNextListen(); }else if(!sent){ scheduleNextListen(); } } };
-  autoRecog.start();
+
+  recog.onerror=function(ev){
+    if(ev.error==='no-speech' && recMode==='toggle'){
+      // トグルモードは無音でも継続
+      return;
+    }
+    addLog({type:'sys',status:'MIC:'+ev.error,ok:false});
+    resetMicBtn();
+    isRec=false;
+  };
+
+  recog.onend=function(){
+    if(isRec && recMode==='toggle'){
+      // トグルモードは再起動して継続
+      try{ recog.start(); }catch(e){
+        // 再起動失敗なら少し待って再試行
+        setTimeout(function(){
+          if(isRec) try{ recog.start(); }catch(e2){}
+        }, 300);
+      }
+      return;
+    }
+    if(isRec) judgeAndSend();
+  };
+
+  recog.start();
 }
 
-function showAutoSentBanner(hitObj){
-  var banner=document.getElementById('auto-sent-banner');
-  var waitMs=parseInt(getSetting('auto_wait','1500'));
-  banner.className=hitObj.isAlias?'show warn':'show ok';
-  banner.textContent=hitObj.isAlias?('⚠ 送信: 「'+hitObj.word+'」\n(認識:「'+hitObj.raw+'」)'):('✓ 送信: 「'+hitObj.word+'」');
-  beepSent();
-  setTimeout(function(){ banner.classList.remove('show'); },waitMs);
+function stopRec(){
+  clearTimeout(autoSendTimer);
+  clearTimeout(toggleTimer);
+  stopToggleTimerUI();
+  isRec=false;
+  if(recog){ try{ recog.stop(); }catch(e){} recog=null; }
+
+  if(recMode==='toggle'){
+    // トグルは停止するだけ
+    resetMicBtn();
+    setTranscript('','');
+  } else {
+    // モメンタリーは判定して送信
+    judgeAndSend();
+  }
 }
-function scheduleNextListen(){
-  if(!autoLoop) return;
-  // 送信後は「戻る」ボタンを表示
-  document.getElementById('auto-return-btn').style.display='block';
-  document.getElementById('auto-stop-btn').style.display='none';
+
+function judgeAndSend(){
+  resetMicBtn();
+  if(!lastTxt){ setTranscript('',''); return; }
+  if(isFiltered(lastTxt)){
+    setTranscript(lastTxt,'filtered');
+    showFB('— 短すぎてフィルターしました','info');
+    addLog({type:'filtered',word:lastTxt,ok:false,status:'フィルター'});
+    return;
+  }
+  var h=lastHit||matchWord(lastTxt);
+  if(h){ setTranscript(h.word,h.isAlias?'alias':'matched'); sendWord(h); }
+  else { setTranscript(lastTxt,'nomatch'); showFB('✗ 一致なし','danger'); beepFail(); addLog({type:'send',word:lastTxt,raw:lastTxt,isAlias:false,ok:false,status:'不一致'}); }
 }
-function setAutoStatus(cls,txt){ var el=document.getElementById('auto-status-badge'); el.className=cls; el.textContent=txt; }
-function setAutoTranscript(txt,mode){ var el=document.getElementById('auto-transcript'); el.className=mode||''; el.textContent=txt; }
+
+function resetMicBtn(){
+  document.getElementById('mic-btn').classList.remove('rec-momentary','rec-toggle','state-matched','state-alias','state-nomatch');
+  document.getElementById('waveform').classList.remove('active');
+  document.getElementById('mic-lbl').textContent='TAP';
+  document.getElementById('mic-icon').textContent='🎤';
+}
+
+function setTranscript(t,mode){
+  var btn=document.getElementById('mic-btn');
+  var el =document.getElementById('transcript-txt');
+  btn.classList.remove('state-matched','state-alias','state-nomatch');
+  el.className='';
+  if(!t || mode==='ph'){
+    el.textContent=t||'タップで録音開始';
+    el.classList.add('ph');
+  } else {
+    el.textContent=t;
+    if(mode){
+      el.classList.add(mode);
+      if(mode==='matched')  btn.classList.add('state-matched');
+      else if(mode==='alias')    btn.classList.add('state-alias');
+      else if(mode==='nomatch')  btn.classList.add('state-nomatch');
+    }
+  }
+}
 
 // ─── WORD EDITOR ──────────────────────────────────────
 function renderWords(){
@@ -893,10 +852,9 @@ function importData(e){ var f=e.target.files[0]; if(!f) return; var r=new FileRe
 function initSettings(){
   document.getElementById('key-display').textContent=deviceKey;
   var mc=document.getElementById('min-chars'); mc.value=getSetting('min_chars','2'); document.getElementById('min-chars-val').textContent=mc.value+'文字以上'; updateSensBar('min-chars');
-  var as=document.getElementById('auto-send-sec'); as.value=getSetting('auto_send_sec','2'); document.getElementById('auto-send-val').textContent=as.value+'秒'; updateSensBar('auto-send-sec');
+  var ms=document.getElementById('momentary-sec'); ms.value=getSetting('momentary_sec','2'); document.getElementById('momentary-sec-val').textContent=ms.value+'秒';
+  var ts=document.getElementById('toggle-sec'); ts.value=getSetting('toggle_sec','30'); document.getElementById('toggle-sec-val').textContent=ts.value+'秒';
   var mm=document.getElementById('match-mode'); mm.value=matchMode; mm.onchange=function(e){ matchMode=e.target.value; setSetting('matchMode',matchMode); };
-  var aw=document.getElementById('auto-wait'); aw.value=getSetting('auto_wait','1500'); aw.onchange=function(e){ setSetting('auto_wait',e.target.value); };
-  var bm=document.getElementById('beep-mode'); bm.value=getSetting('beep_mode','on'); bm.onchange=function(e){ setSetting('beep_mode',e.target.value); };
 }
 
 // ─── LOG ──────────────────────────────────────────────
@@ -928,19 +886,14 @@ function showFB(msg,type){ var el=document.getElementById('feedback'); el.textCo
 // ─── INIT ─────────────────────────────────────────────
 window.onload=function(){
   var savedUrl=localStorage.getItem('ws_url');
-  if(savedUrl) document.getElementById('ws-input').value=savedUrl;
-  document.getElementById('new-word').addEventListener('keydown',function(e){ if(e.key==='Enter') addWord(); });
-  // ヒントテキスト初期化
-  var sec=getAutoSendSec();
-  var hint=document.getElementById('mic-hint-txt');
-  if(hint) hint.innerHTML='タップで録音開始<br>録音後'+sec+'秒で自動送信';
+  if(savedUrl){ document.getElementById('ws-input').value=savedUrl; connectWS(savedUrl); }
 
-  if(window.location.search.indexOf('auto=1')>=0){
-    if(savedUrl) connectWS(savedUrl);
-    startAutoMode();
-  }
+  // モード復元（デフォルトはトグル）
+  recMode = getSetting('rec_mode','toggle');
+  setMode(recMode);
+
+  document.getElementById('new-word').addEventListener('keydown',function(e){ if(e.key==='Enter') addWord(); });
 };
 </script>
-
 </body>
 </html>
