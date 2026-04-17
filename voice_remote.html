@@ -564,6 +564,18 @@ function connectWS(url){
       pendingHit=null;
     }
   };
+  ws.onmessage = function(e){
+    try{
+      var data=JSON.parse(e.data);
+      if(data.status==='ok'){
+        addLog({type:'result',word:data.word||'',status:'ラズパイ完了',ok:true});
+      } else if(data.status==='fail'){
+        addLog({type:'result',word:data.word||'',status:'ラズパイ失敗',ok:false});
+      } else if(data.status==='auth_error'){
+        addLog({type:'sys',status:'認証エラー',ok:false});
+      }
+    }catch(err){}
+  };
   ws.onclose=function(){ setStatus('','切断'); addLog({type:'sys',status:'切断',ok:false}); };
   ws.onerror=function(){ addLog({type:'sys',status:'エラー',ok:false}); };
 }
@@ -865,6 +877,11 @@ function addLog(opt){
   if(opt.type==='sys'){
     row.className='log-row sys';
     row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw sys">SYSTEM</span><span class="ls sys" style="margin-left:auto;">'+esc(opt.status)+'</span></div>';
+  } else if(opt.type==='result'){
+    var cls=opt.ok?'ok':'ng';
+    var icon=opt.ok?'🖥✓':'🖥✗';
+    row.className='log-row '+(opt.ok?'ok':'ng');
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw '+cls+'">'+icon+' '+esc(opt.word)+'</span><span class="ls '+cls+'" style="margin-left:auto;">'+esc(opt.status)+'</span></div>';
   } else if(opt.type==='filtered'){
     row.className='log-row filtered';
     row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw filtered">— '+esc(opt.word)+'</span><span class="ls filtered" style="margin-left:auto;">フィルター</span></div>';
