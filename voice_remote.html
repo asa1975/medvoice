@@ -111,6 +111,28 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 #mic-btn.rec-momentary #mic-lbl{color:var(--danger);}
 #mic-btn.rec-toggle    #mic-lbl{color:var(--green);}
 
+/* INPUT MODE */
+#input-mode-overlay{
+  display:none;position:fixed;inset:0;z-index:50;
+  background:rgba(0,0,0,0.6);
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:16px;padding:24px;
+}
+#input-mode-overlay.show{display:flex;}
+.input-mode-card{
+  background:var(--white);border-radius:16px;padding:20px;
+  width:100%;max-width:400px;
+  display:flex;flex-direction:column;gap:14px;
+}
+.input-mode-title{font-size:13px;font-weight:700;color:var(--text3);font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;}
+.input-mode-field{font-size:28px;font-weight:900;color:var(--text);min-height:44px;text-align:center;word-break:break-all;}
+.input-mode-interim{font-size:14px;color:var(--accent);text-align:center;min-height:20px;font-family:var(--mono);}
+.input-mode-btns{display:flex;gap:8px;}
+.input-mode-btns button{flex:1;border:none;border-radius:10px;font-family:var(--sans);font-size:14px;font-weight:700;padding:14px;cursor:pointer;}
+#input-confirm-btn{background:var(--accent);color:#fff;}
+#input-cancel-btn{background:var(--bg);color:var(--text2);border:1.5px solid var(--border2);}
+#input-clear-btn{background:var(--warn-l);color:var(--warn);border:1.5px solid var(--warn);}
+
 /* WAVEFORM */
 #waveform{display:flex;align-items:center;justify-content:center;gap:5px;height:32px;opacity:0;transition:opacity .3s;}
 #waveform.active{opacity:1;}
@@ -202,6 +224,20 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 </style>
 </head>
 <body>
+
+<!-- INPUT MODE OVERLAY -->
+<div id="input-mode-overlay">
+  <div class="input-mode-card">
+    <div class="input-mode-title" id="input-mode-field-name">フィールド入力中</div>
+    <div class="input-mode-field" id="input-mode-text">---</div>
+    <div class="input-mode-interim" id="input-mode-interim"></div>
+    <div class="input-mode-btns">
+      <button id="input-clear-btn" onclick="inputModeClear()">クリア</button>
+      <button id="input-cancel-btn" onclick="inputModeCancel()">キャンセル</button>
+      <button id="input-confirm-btn" onclick="inputModeConfirm()">確定 ↵</button>
+    </div>
+  </div>
+</div>
 
 <div class="tab-bar">
   <button class="tab-btn active" onclick="showTab('home')">🎤 音声</button>
@@ -544,6 +580,97 @@ function loadWords(){
 function saveWords(){ localStorage.setItem('medwords_v3',JSON.stringify(words)); }
 function isFiltered(txt){ return txt.trim().length < getMinChars(); }
 
+// ─── INPUT MODE STATE ────────────────────────────────────
+var inputModeActive  = false;
+var inputModeWord    = '';
+var inputModeRecog   = null;
+var inputModeText    = '';
+
+function enterInputMode(word){
+  inputModeActive = true;
+  inputModeWord   = word;
+  inputModeText   = '';
+  document.getElementById('input-mode-field-name').textContent = '「'+word+'」に入力中';
+  document.getElementById('input-mode-text').textContent = '---';
+  document.getElementById('input-mode-interim').textContent = '';
+  document.getElementById('input-mode-overlay').classList.add('show');
+  // 入力モード用音声認識開始
+  startInputRecog();
+}
+
+function exitInputMode(){
+  inputModeActive = false;
+  if(inputModeRecog){ try{ inputModeRecog.stop(); }catch(e){} inputModeRecog=null; }
+  document.getElementById('input-mode-overlay').classList.remove('show');
+}
+
+function startInputRecog(){
+  if(inputModeRecog){ try{ inputModeRecog.stop(); }catch(e){} inputModeRecog=null; }
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR) return;
+  inputModeRecog = new SR();
+  inputModeRecog.lang = 'en-US';  // 英数字入力なので英語認識
+  inputModeRecog.interimResults = true;
+  inputModeRecog.maxAlternatives = 1;
+  inputModeRecog.continuous = false;
+
+  inputModeRecog.onresult = function(ev){
+    var interim='', final='';
+    for(var i=ev.resultIndex;i<ev.results.length;i++){
+      var t=ev.results[i][0].transcript;
+      if(ev.results[i].isFinal) final+=t; else interim+=t;
+    }
+    // 数字・英字・小数点のみ抽出
+    var cur = (final||interim).replace(/[^0-9a-zA-Z.]/g,'').trim();
+    document.getElementById('input-mode-interim').textContent = cur ? '認識中: '+cur : '';
+    if(final && cur){
+      inputModeText = cur;
+      document.getElementById('input-mode-text').textContent = cur;
+      document.getElementById('input-mode-interim').textContent = '';
+    }
+  };
+  inputModeRecog.onerror = function(ev){
+    if(ev.error === 'no-speech' && inputModeActive){ startInputRecog(); }
+  };
+  inputModeRecog.onend = function(){
+    if(inputModeActive) startInputRecog();  // 連続認識
+  };
+  inputModeRecog.start();
+}
+
+function inputModeConfirm(){
+  if(!inputModeText){ exitInputMode(); return; }
+  // キーボード入力をラズパイに送信
+  if(isConnected()){
+    ws.send(JSON.stringify({type:'keyboard_input', text:inputModeText, key:deviceKey}));
+    addLog({type:'send', word:inputModeText, raw:inputModeText, isAlias:false, ok:true, status:'入力送信'});
+  }
+  // Enterも送信
+  setTimeout(function(){
+    if(isConnected()){
+      ws.send(JSON.stringify({type:'keyboard_enter', key:deviceKey}));
+    }
+  }, 300);
+  exitInputMode();
+}
+
+function inputModeClear(){
+  inputModeText = '';
+  document.getElementById('input-mode-text').textContent = '---';
+  document.getElementById('input-mode-interim').textContent = '';
+  if(isConnected()){
+    ws.send(JSON.stringify({type:'keyboard_clear', key:deviceKey}));
+  }
+}
+
+function inputModeCancel(){
+  // Enterなしでキャンセル
+  if(isConnected()){
+    ws.send(JSON.stringify({type:'keyboard_clear', key:deviceKey}));
+  }
+  exitInputMode();
+}
+
 // ─── MODE ─────────────────────────────────────────────
 function setMode(mode){
   recMode = mode;
@@ -590,7 +717,15 @@ function connectWS(url){
   ws.onmessage = function(e){
     try{
       var data=JSON.parse(e.data);
-      if(data.status==='ok'){
+      if(data.status==='input_ready'){
+        // 入力フィールドをクリックした → 入力モードへ
+        addLog({type:'result',word:data.word||'',status:'入力待機中',ok:true});
+        beepStart();
+        enterInputMode(data.word||'');
+      } else if(data.status==='ok' && data.type==='keyboard_input'){
+        addLog({type:'result',word:data.text||'',status:'入力完了',ok:true});
+        beepResult();
+      } else if(data.status==='ok'){
         addLog({type:'result',word:data.word||'',status:'ラズパイ完了',ok:true});
         beepResult();
       } else if(data.status==='fail'){
