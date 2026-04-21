@@ -1172,3 +1172,112 @@ function renderWordCard(w){
     +'<button class="btn-xs" onclick="addPattern(\''+w.id+'\')">＋</button>'
     +'</div></div></div>';
 }
+function setWordUiType(id, type){
+  var w=words.find(function(x){ return x.id===id; }); if(!w) return;
+  w.ui_type = type; saveWords();
+  var btnBtn = document.getElementById('uitype-btn-'+id);
+  var inpBtn = document.getElementById('uitype-inp-'+id);
+  if(btnBtn){ btnBtn.className = 'btn-xs'+(type==='button'?' btn-xs-active':''); }
+  if(inpBtn){ inpBtn.className = 'btn-xs'+(type==='input_field'?' btn-xs-active':''); }
+}
+function saveSpeakText(id){
+  var w=words.find(function(x){ return x.id===id; }); if(!w) return;
+  var inp=document.getElementById('speak-'+id); if(!inp) return;
+  w.speak_text = inp.value.trim(); saveWords();
+  showFB('💾 読み上げテキストを保存しました','ok');
+}
+function testSpeak(id){
+  var w=words.find(function(x){ return x.id===id; }); if(!w) return;
+  var inp=document.getElementById('speak-'+id);
+  var text = inp ? inp.value.trim() : (w.speak_text||w.word);
+  if(!text) return;
+  try{
+    window.speechSynthesis.cancel();
+    var utt=new SpeechSynthesisUtterance(text);
+    utt.lang='ja-JP';
+    utt.rate=parseFloat(getSetting('speak_rate','1.0'));
+    utt.pitch=parseFloat(getSetting('speak_pitch','1.0'));
+    window.speechSynthesis.speak(utt);
+  }catch(e){}
+}
+function toggleCard(id){ var a=document.getElementById('parea-'+id),ic=document.getElementById('tico-'+id); if(a.classList.contains('open')){ a.classList.remove('open'); ic.classList.remove('open'); }else{ a.classList.add('open'); ic.classList.add('open'); } }
+function addWord(){ var inp=document.getElementById('new-word'),cat=document.getElementById('new-cat').value,w=inp.value.trim(); if(!w) return; if(words.some(function(x){ return x.word===w; })){ flashEl(inp); return; } words.push({id:uid(),word:w,cat:cat,patterns:[w],ui_type:'button'}); saveWords(); inp.value=''; renderWords(); }
+function delWord(id,e){ e.stopPropagation(); var w=words.filter(function(x){ return x.id===id; })[0]; if(!w||!confirm('「'+w.word+'」を削除しますか？')) return; words=words.filter(function(x){ return x.id!==id; }); saveWords(); renderWords(); }
+function addPattern(id){ var inp=document.getElementById('pinput-'+id),val=inp.value.trim(); if(!val) return; var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return; if(w.patterns.indexOf(val)>=0){ flashEl(inp); return; } w.patterns.push(val); saveWords(); refreshPatternList(w); inp.value=''; }
+function delPattern(id,pi){ var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return; if(w.patterns[pi]===w.word){ alert('送信ワード本体は削除できません'); return; } w.patterns.splice(pi,1); saveWords(); refreshPatternList(w); }
+function refreshPatternList(w){ var el=document.getElementById('plist-'+w.id); if(!el) return; el.innerHTML=(w.patterns||[]).map(function(p,pi){ var isMain=(p===w.word); if(isMain) return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>'; return '<div class="pattern-chip"><span>'+esc(p)+'</span><button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>'; }).join(''); }
+function resetWords(){ if(!confirm('全ワードをデフォルトに戻しますか？')) return; words=makeDefaultWords(); saveWords(); renderWords(); }
+function exportData(){ var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(words,null,2)],{type:'application/json'})); a.download='medvoice_words.json'; a.click(); }
+function importClick(){ document.getElementById('import-file').click(); }
+function importData(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(ev){ try{ var d=JSON.parse(ev.target.result); if(!Array.isArray(d)) throw 0; words=d; saveWords(); renderWords(); alert('インポート完了'); }catch(err){ alert('形式エラー'); } }; r.readAsText(f); }
+
+// ─── SETTINGS ─────────────────────────────────────────
+function initSettings(){
+  document.getElementById('key-display').textContent=deviceKey;
+  var mc=document.getElementById('min-chars'); mc.value=getSetting('min_chars','2'); document.getElementById('min-chars-val').textContent=mc.value+'文字以上'; updateSensBar('min-chars');
+  var ms=document.getElementById('momentary-sec'); ms.value=getSetting('momentary_sec','2'); document.getElementById('momentary-sec-val').textContent=ms.value+'秒';
+  var ts=document.getElementById('toggle-sec'); ts.value=getSetting('toggle_sec','30'); document.getElementById('toggle-sec-val').textContent=ts.value+'秒';
+  var mm=document.getElementById('match-mode'); mm.value=matchMode; mm.onchange=function(e){ matchMode=e.target.value; setSetting('matchMode',matchMode); };
+  var sos=document.getElementById('speak-on-send'); sos.value=getSetting('speak_on_send','on'); sos.onchange=function(e){ setSetting('speak_on_send',e.target.value); };
+  var sr=document.getElementById('speak-rate'); sr.value=getSetting('speak_rate','1.0'); sr.onchange=function(e){ setSetting('speak_rate',e.target.value); };
+  var sp=document.getElementById('speak-pitch'); sp.value=getSetting('speak_pitch','1.0'); sp.onchange=function(e){ setSetting('speak_pitch',e.target.value); };
+  var bok=document.getElementById('beep-ok'); bok.value=getSetting('beep_ok','popon_up'); bok.onchange=function(e){ setSetting('beep_ok',e.target.value); };
+  var bfail=document.getElementById('beep-fail'); bfail.value=getSetting('beep_fail','popon_down'); bfail.onchange=function(e){ setSetting('beep_fail',e.target.value); };
+}
+
+// ─── LOG ──────────────────────────────────────────────
+function addLog(opt){
+  var log=document.getElementById('log');
+  var now=new Date(); var t=pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+  var row=document.createElement('div');
+  if(opt.type==='sys'){
+    row.className='log-row sys';
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw sys">SYSTEM</span><span class="ls sys" style="margin-left:auto;">'+esc(opt.status)+'</span></div>';
+  } else if(opt.type==='result'){
+    var cls=opt.ok?'ok':'ng';
+    var icon=opt.ok?'🖥✓':'🖥✗';
+    row.className='log-row '+(opt.ok?'ok':'ng');
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw '+cls+'">'+icon+' '+esc(opt.word)+'</span><span class="ls '+cls+'" style="margin-left:auto;">'+esc(opt.status)+'</span></div>';
+  } else if(opt.type==='filtered'){
+    row.className='log-row filtered';
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw filtered">— '+esc(opt.word)+'</span><span class="ls filtered" style="margin-left:auto;">フィルター</span></div>';
+  } else {
+    var cls2=!opt.ok?(opt.status==='接続待ち'?'alias':'ng'):(opt.isAlias?'alias':'ok');
+    var icon2=!opt.ok?(opt.status==='接続待ち'?'⏳':'✗'):(opt.isAlias?'⚠':'✓');
+    var sub='';
+    if(opt.isAlias&&opt.ok) sub='<div class="log-sub">認識: <span class="raw">「'+esc(opt.raw)+'」</span> → 送信: 「'+esc(opt.word)+'」</div>';
+    else if(!opt.ok&&opt.status==='不一致') sub='<div class="log-sub">「'+esc(opt.raw)+'」はワードリストに未登録</div>';
+    else if(!opt.ok&&opt.status==='接続待ち') sub='<div class="log-sub">接続完了後に自動送信します</div>';
+    row.className='log-row '+cls2;
+    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw '+cls2+'">'+icon2+' '+esc(opt.word)+'</span><span class="ls '+cls2+'" style="margin-left:auto;">'+esc(opt.status)+'</span></div>'+sub;
+  }
+  log.insertBefore(row,log.firstChild);
+  while(log.children.length>30) log.removeChild(log.lastChild);
+}
+function showFB(msg,type){ var el=document.getElementById('feedback'); el.textContent=msg; el.className='show fb-'+type; clearTimeout(el._t); el._t=setTimeout(function(){ el.classList.remove('show'); },2800); }
+function testSoundSettings(){
+  beepResult();
+  setTimeout(function(){ beepResultFail(); }, 800);
+  setTimeout(function(){
+    try{
+      window.speechSynthesis.cancel();
+      var utt=new SpeechSynthesisUtterance('テスト送信');
+      utt.lang='ja-JP';
+      utt.rate=parseFloat(getSetting('speak_rate','1.0'));
+      utt.pitch=parseFloat(getSetting('speak_pitch','1.0'));
+      window.speechSynthesis.speak(utt);
+    }catch(e){}
+  }, 1600);
+}
+
+// ─── INIT ─────────────────────────────────────────────
+window.onload=function(){
+  var savedUrl=localStorage.getItem('ws_url');
+  if(savedUrl){ document.getElementById('ws-input').value=savedUrl; connectWS(savedUrl); }
+  recMode = getSetting('rec_mode','toggle');
+  setMode(recMode);
+  document.getElementById('new-word').addEventListener('keydown',function(e){ if(e.key==='Enter') addWord(); });
+};
+</script>
+</body>
+</html>
