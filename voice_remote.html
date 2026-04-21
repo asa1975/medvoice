@@ -604,24 +604,58 @@ function exitInputMode(){
   document.getElementById('input-mode-overlay').classList.remove('show');
 }
 
+// 日本語/英語の数字表現をアラビア数字に変換
+function toArabicNumber(str){
+  // 全角数字→半角
+  str = str.replace(/[０-９]/g, function(c){ return String.fromCharCode(c.charCodeAt(0)-0xFEE0); });
+  // 日本語数字マッピング
+  var kanjiMap = {'〇':0,'零':0,'一':1,'二':2,'三':3,'四':4,'五':5,'六':6,'七':7,'八':8,'九':9,
+                  '十':10,'百':100,'千':1000,'万':10000,
+                  '壱':1,'弐':2,'参':3,'拾':10};
+  // 英語数字マッピング
+  var enMap = {'zero':0,'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7,'eight':8,'nine':9,
+               'ten':10,'eleven':11,'twelve':12,'thirteen':13,'fourteen':14,'fifteen':15,
+               'sixteen':16,'seventeen':17,'eighteen':18,'nineteen':19,'twenty':20,
+               'thirty':30,'forty':40,'fifty':50,'sixty':60,'seventy':70,'eighty':80,'ninety':90,
+               'hundred':100,'thousand':1000,'point':'.','dot':'.'};
+  // まず英語をアラビア数字に
+  var s = str.toLowerCase();
+  for(var k in enMap){ s = s.replace(new RegExp('\b'+k+'\b','g'), enMap[k]+' '); }
+  // 漢字をアラビア数字に（簡易）
+  for(var k in kanjiMap){ s = s.replace(new RegExp(k,'g'), kanjiMap[k]+' '); }
+  // 数字・小数点・スラッシュ・コロン以外を除去
+  s = s.replace(/[^0-9.\/:]/g,'');
+  return s.trim();
+}
+
 function startInputRecog(){
   if(inputModeRecog){ try{ inputModeRecog.stop(); }catch(e){} inputModeRecog=null; }
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR) return;
   inputModeRecog = new SR();
-  inputModeRecog.lang = 'en-US';  // 英数字入力なので英語認識
+  inputModeRecog.lang = 'ja-JP';  // 日本語認識（数字は日本語でも読める）
   inputModeRecog.interimResults = true;
-  inputModeRecog.maxAlternatives = 1;
+  inputModeRecog.maxAlternatives = 3;  // 複数候補から数字が取れるものを選ぶ
   inputModeRecog.continuous = false;
 
   inputModeRecog.onresult = function(ev){
     var interim='', final='';
+    // 複数候補から数字を含むものを優先
     for(var i=ev.resultIndex;i<ev.results.length;i++){
-      var t=ev.results[i][0].transcript;
-      if(ev.results[i].isFinal) final+=t; else interim+=t;
+      if(ev.results[i].isFinal){
+        // 候補の中から数字変換できるものを優先
+        var best='';
+        for(var j=0;j<ev.results[i].length;j++){
+          var cand = toArabicNumber(ev.results[i][j].transcript);
+          if(cand.length > best.length) best=cand;
+        }
+        final += best || toArabicNumber(ev.results[i][0].transcript);
+      } else {
+        interim += ev.results[i][0].transcript;
+      }
     }
-    // 数字・英字・小数点のみ抽出
-    var cur = (final||interim).replace(/[^0-9a-zA-Z.]/g,'').trim();
+    var interimConverted = toArabicNumber(interim);
+    var cur = (final || interimConverted).trim();
     document.getElementById('input-mode-interim').textContent = cur ? '認識中: '+cur : '';
     if(final && cur){
       inputModeText = cur;
@@ -633,7 +667,7 @@ function startInputRecog(){
     if(ev.error === 'no-speech' && inputModeActive){ startInputRecog(); }
   };
   inputModeRecog.onend = function(){
-    if(inputModeActive) startInputRecog();  // 連続認識
+    if(inputModeActive) startInputRecog();
   };
   inputModeRecog.start();
 }
@@ -718,10 +752,12 @@ function connectWS(url){
     try{
       var data=JSON.parse(e.data);
       if(data.status==='input_ready'){
-        // 入力フィールドをクリックした → 入力モードへ
+        // 入力フィールドをクリックした → 既に入力モードなら何もしない（アプリ側が先行してるため）
         addLog({type:'result',word:data.word||'',status:'入力待機中',ok:true});
-        beepStart();
-        enterInputMode(data.word||'');
+        if(!inputModeActive){
+          beepStart();
+          enterInputMode(data.word||'');
+        }
       } else if(data.status==='ok' && data.type==='keyboard_input'){
         addLog({type:'result',word:data.text||'',status:'入力完了',ok:true});
         beepResult();
@@ -756,10 +792,18 @@ function sendWord(hitObj){
     if(hitObj.isAlias){ showFB('⚠ 誤変換経由\n「'+hitObj.raw+'」→「'+hitObj.word+'」','warn'); }
     else              { showFB('✓ '+hitObj.word+' 送信','ok'); }
     beepSent();
+    // input_fieldなら応答を待たずに即入力モードへ
+    if(hitObj.ui_type === 'input_field'){
+      enterInputMode(hitObj.word);
+    }
   } else {
     pendingHit=hitObj;
     addLog({type:'send',word:hitObj.word,raw:hitObj.raw,isAlias:hitObj.isAlias,ok:false,status:'接続待ち'});
     showFB('⏳ 接続後に送信: 「'+hitObj.word+'」','info');
+    // 未接続でもinput_fieldなら入力モードへ
+    if(hitObj.ui_type === 'input_field'){
+      enterInputMode(hitObj.word);
+    }
   }
 }
 
@@ -776,7 +820,7 @@ function matchWord(transcript){
     }
   }
   if(!best) return null;
-  return {word:best.word,raw:t,matchedPat:bestPat,isAlias:bestIsAlias};
+  return {word:best.word,raw:t,matchedPat:bestPat,isAlias:bestIsAlias,ui_type:best.ui_type||'button'};
 }
 
 // ─── TOGGLE TIMER UI ──────────────────────────────────
@@ -876,11 +920,8 @@ function startRec(){
       // トグル：interimでマッチした瞬間に即送信（finalは無視してリセットのみ）
       if(final){
         // finalが来たらテキストをリセットして次の発話を待つだけ
-        lastTxt=''; lastHit=null;
-        setTimeout(function(){
-          lastSentWord='';
-          setTranscript('話してください…','ph');
-        }, 500);
+        lastTxt=''; lastHit=null; lastSentWord='';
+        setTranscript('話してください…','ph');
       } else if(hit){
         // interimでマッチしたら即送信
         setTranscript(hit.word, hit.isAlias?'alias':'matched');
@@ -1014,7 +1055,7 @@ function renderWordCard(w){
     +'</div></div></div>';
 }
 function toggleCard(id){ var a=document.getElementById('parea-'+id),ic=document.getElementById('tico-'+id); if(a.classList.contains('open')){ a.classList.remove('open'); ic.classList.remove('open'); }else{ a.classList.add('open'); ic.classList.add('open'); } }
-function addWord(){ var inp=document.getElementById('new-word'),cat=document.getElementById('new-cat').value,w=inp.value.trim(); if(!w) return; if(words.some(function(x){ return x.word===w; })){ flashEl(inp); return; } words.push({id:uid(),word:w,cat:cat,patterns:[w]}); saveWords(); inp.value=''; renderWords(); }
+function addWord(){ var inp=document.getElementById('new-word'),cat=document.getElementById('new-cat').value,w=inp.value.trim(); if(!w) return; if(words.some(function(x){ return x.word===w; })){ flashEl(inp); return; } words.push({id:uid(),word:w,cat:cat,patterns:[w],ui_type:'button'}); saveWords(); inp.value=''; renderWords(); }
 function delWord(id,e){ e.stopPropagation(); var w=words.filter(function(x){ return x.id===id; })[0]; if(!w||!confirm('「'+w.word+'」を削除しますか？')) return; words=words.filter(function(x){ return x.id!==id; }); saveWords(); renderWords(); }
 function addPattern(id){ var inp=document.getElementById('pinput-'+id),val=inp.value.trim(); if(!val) return; var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return; if(w.patterns.indexOf(val)>=0){ flashEl(inp); return; } w.patterns.push(val); saveWords(); refreshPatternList(w); inp.value=''; }
 function delPattern(id,pi){ var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return; if(w.patterns[pi]===w.word){ alert('送信ワード本体は削除できません'); return; } w.patterns.splice(pi,1); saveWords(); refreshPatternList(w); }
