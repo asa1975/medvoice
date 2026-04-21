@@ -191,6 +191,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
 .pattern-input:focus{border-color:var(--accent);}
 .btn-xs{background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:var(--sans);font-size:12px;font-weight:700;padding:9px 14px;cursor:pointer;}
 .btn-xs:active{opacity:.75;}
+.btn-xs-active{background:var(--accent-l)!important;color:var(--accent)!important;border:1.5px solid var(--accent)!important;}
 .add-word-form{background:var(--white);border:1.5px solid var(--border);border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.05);}
 .add-row{display:flex;gap:8px;margin-bottom:10px;}
 .add-row input{flex:1;background:var(--bg);border:1.5px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:16px;font-weight:700;padding:11px 12px;outline:none;transition:border-color .2s;}
@@ -380,6 +381,53 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
   </div>
 
   <div class="card">
+    <div class="card-label">🔊 音声・ビープ設定</div>
+    <div class="setting-row">
+      <label>送信時の読み上げ</label>
+      <select id="speak-on-send">
+        <option value="on">オン（おうむ返し）</option>
+        <option value="off">オフ</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <label>読み上げ速度</label>
+      <select id="speak-rate">
+        <option value="0.8">ゆっくり</option>
+        <option value="1.0">標準</option>
+        <option value="1.3">速い</option>
+        <option value="1.6">かなり速い</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <label>読み上げピッチ</label>
+      <select id="speak-pitch">
+        <option value="0.8">低め</option>
+        <option value="1.0">標準</option>
+        <option value="1.3">高め</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <label>完了音（ラズパイ成功時）</label>
+      <select id="beep-ok">
+        <option value="popon_up">ポポン↑（デフォルト）</option>
+        <option value="pip">ピッ（短音）</option>
+        <option value="triple">ポポポン↑（3音）</option>
+        <option value="none">なし</option>
+      </select>
+    </div>
+    <div class="setting-row">
+      <label>失敗音（ラズパイ失敗時）</label>
+      <select id="beep-fail">
+        <option value="popon_down">ポポン↓（デフォルト）</option>
+        <option value="boo">ブー（低音）</option>
+        <option value="pip">ピッ（短音）</option>
+        <option value="none">なし</option>
+      </select>
+    </div>
+    <button class="btn-full outline" onclick="testSoundSettings()" style="margin-top:4px;">🔊 音をテスト</button>
+  </div>
+
+  <div class="card">
     <div class="card-label">マッチング設定</div>
     <div class="setting-row">
       <label>一致モード</label>
@@ -452,34 +500,77 @@ function beepStart(){ beep(880,0.12,0.4); }
 function beepSent() { beep(660,0.18,0.35); }
 function beepFail() { beep(300,0.25,0.3); }
 function beepStop()  { beep(440,0.2,0.3); }
+// ─── SPEECH ──────────────────────────────────────────
+function getSpeakText(word){
+  // ワードに speak_text が設定されていればそれを使う
+  var w = words.find(function(x){ return x.word===word; });
+  if(w && w.speak_text) return w.speak_text;
+  return word;
+}
+function speakWord(word){
+  if(getSetting('speak_on_send','on')==='off') return;
+  var text = getSpeakText(word);
+  if(!text) return;
+  try{
+    window.speechSynthesis.cancel();
+    var utt = new SpeechSynthesisUtterance(text);
+    utt.lang  = 'ja-JP';
+    utt.rate  = parseFloat(getSetting('speak_rate','1.0'));
+    utt.pitch = parseFloat(getSetting('speak_pitch','1.0'));
+    window.speechSynthesis.speak(utt);
+  }catch(e){}
+}
+
 function beepResult(){
-  // ラズパイ完了：2音上昇（ポポン）
+  var preset = getSetting('beep_ok','popon_up');
+  if(preset==='none') return;
   try{
     var ctx=getAudioCtx();
-    [660,880].forEach(function(freq,i){
-      var osc=ctx.createOscillator(),gain=ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value=freq;
-      var t=ctx.currentTime+i*0.12;
-      gain.gain.setValueAtTime(0.3,t);
-      gain.gain.exponentialRampToValueAtTime(0.001,t+0.12);
-      osc.start(t); osc.stop(t+0.12);
-    });
+    if(preset==='popon_up'){
+      [660,880].forEach(function(freq,i){
+        var osc=ctx.createOscillator(),gain=ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value=freq;
+        var t=ctx.currentTime+i*0.13;
+        gain.gain.setValueAtTime(0.3,t);
+        gain.gain.exponentialRampToValueAtTime(0.001,t+0.13);
+        osc.start(t); osc.stop(t+0.13);
+      });
+    } else if(preset==='pip'){
+      beep(880,0.1,0.35);
+    } else if(preset==='triple'){
+      [660,770,880].forEach(function(freq,i){
+        var osc=ctx.createOscillator(),gain=ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value=freq;
+        var t=ctx.currentTime+i*0.1;
+        gain.gain.setValueAtTime(0.25,t);
+        gain.gain.exponentialRampToValueAtTime(0.001,t+0.1);
+        osc.start(t); osc.stop(t+0.1);
+      });
+    }
   }catch(e){}
 }
 function beepResultFail(){
-  // ラズパイ失敗：2音下降（ポポン低め）
+  var preset = getSetting('beep_fail','popon_down');
+  if(preset==='none') return;
   try{
     var ctx=getAudioCtx();
-    [440,300].forEach(function(freq,i){
-      var osc=ctx.createOscillator(),gain=ctx.createGain();
-      osc.connect(gain); gain.connect(ctx.destination);
-      osc.frequency.value=freq;
-      var t=ctx.currentTime+i*0.12;
-      gain.gain.setValueAtTime(0.3,t);
-      gain.gain.exponentialRampToValueAtTime(0.001,t+0.15);
-      osc.start(t); osc.stop(t+0.15);
-    });
+    if(preset==='popon_down'){
+      [440,300].forEach(function(freq,i){
+        var osc=ctx.createOscillator(),gain=ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value=freq;
+        var t=ctx.currentTime+i*0.13;
+        gain.gain.setValueAtTime(0.3,t);
+        gain.gain.exponentialRampToValueAtTime(0.001,t+0.15);
+        osc.start(t); osc.stop(t+0.15);
+      });
+    } else if(preset==='boo'){
+      beep(220,0.4,0.35);
+    } else if(preset==='pip'){
+      beep(300,0.15,0.3);
+    }
   }catch(e){}
 }
 
@@ -640,16 +731,27 @@ function startInputRecog(){
 
   inputModeRecog.onresult = function(ev){
     var interim='', final='';
-    // 複数候補から数字を含むものを優先
     for(var i=ev.resultIndex;i<ev.results.length;i++){
       if(ev.results[i].isFinal){
-        // 候補の中から数字変換できるものを優先
+        var raw = ev.results[i][0].transcript.trim();
+        // 「確定」「けってい」「送信」で確定
+        if(raw==='確定'||raw==='けってい'||raw==='送信'||raw==='決定'){
+          inputModeConfirm(); return;
+        }
+        // 「クリア」「消去」でクリア
+        if(raw==='クリア'||raw==='消去'||raw==='消して'){
+          inputModeClear(); return;
+        }
+        // 「キャンセル」でキャンセル
+        if(raw==='キャンセル'||raw==='取り消し'){
+          inputModeCancel(); return;
+        }
         var best='';
         for(var j=0;j<ev.results[i].length;j++){
           var cand = toArabicNumber(ev.results[i][j].transcript);
           if(cand.length > best.length) best=cand;
         }
-        final += best || toArabicNumber(ev.results[i][0].transcript);
+        final += best || toArabicNumber(raw);
       } else {
         interim += ev.results[i][0].transcript;
       }
@@ -791,7 +893,8 @@ function sendWord(hitObj){
     doSend(hitObj);
     if(hitObj.isAlias){ showFB('⚠ 誤変換経由\n「'+hitObj.raw+'」→「'+hitObj.word+'」','warn'); }
     else              { showFB('✓ '+hitObj.word+' 送信','ok'); }
-    beepSent();
+    // 送信おうむ返し音声
+    speakWord(hitObj.word);
     // input_fieldなら応答を待たずに即入力モードへ
     if(hitObj.ui_type === 'input_field'){
       enterInputMode(hitObj.word);
@@ -1039,6 +1142,10 @@ function renderWordCard(w){
     if(isMain) return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>';
     return '<div class="pattern-chip"><span>'+esc(p)+'</span><button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>';
   }).join('');
+  var uiType = w.ui_type||'button';
+  var speakText = w.speak_text!==undefined ? w.speak_text : w.word;
+  var btnActive  = uiType==='button'       ? ' btn-xs-active' : '';
+  var inpActive  = uiType==='input_field'  ? ' btn-xs-active' : '';
   return '<div class="word-card" id="wcard-'+w.id+'">'
     +'<div class="word-card-header" onclick="toggleCard(\''+w.id+'\')">'
     +'<span class="wch-name">'+esc(w.word)+'</span>'
@@ -1047,6 +1154,17 @@ function renderWordCard(w){
     +'<span class="toggle-icon" id="tico-'+w.id+'">▼</span>'
     +'</div>'
     +'<div class="pattern-area" id="parea-'+w.id+'">'
+    +'<div class="pattern-label" style="margin-top:4px;">UIタイプ</div>'
+    +'<div style="display:flex;gap:6px;margin-bottom:12px;">'
+    +'<button class="btn-xs'+btnActive+'" onclick="setWordUiType(\''+w.id+'\',\'button\')" id="uitype-btn-'+w.id+'">🔘 ボタン</button>'
+    +'<button class="btn-xs'+inpActive+'" onclick="setWordUiType(\''+w.id+'\',\'input_field\')" id="uitype-inp-'+w.id+'">📝 入力フィールド</button>'
+    +'</div>'
+    +'<div class="pattern-label">送信時の読み上げ</div>'
+    +'<div class="pattern-add-row" style="margin-bottom:12px;">'
+    +'<input class="pattern-input" id="speak-'+w.id+'" type="text" value="'+esc(speakText)+'" placeholder="読み上げテキスト（空欄で読み上げなし）" maxlength="40">'
+    +'<button class="btn-xs" onclick="saveSpeakText(\''+w.id+'\')">保存</button>'
+    +'<button class="btn-xs" style="background:var(--bg);color:var(--accent);border:1.5px solid var(--accent);" onclick="testSpeak(\''+w.id+'\')">▶</button>'
+    +'</div>'
     +'<div class="pattern-label">認識パターン</div>'
     +'<div class="pattern-list" id="plist-'+w.id+'">'+pChips+'</div>'
     +'<div class="pattern-add-row">'
@@ -1054,68 +1172,3 @@ function renderWordCard(w){
     +'<button class="btn-xs" onclick="addPattern(\''+w.id+'\')">＋</button>'
     +'</div></div></div>';
 }
-function toggleCard(id){ var a=document.getElementById('parea-'+id),ic=document.getElementById('tico-'+id); if(a.classList.contains('open')){ a.classList.remove('open'); ic.classList.remove('open'); }else{ a.classList.add('open'); ic.classList.add('open'); } }
-function addWord(){ var inp=document.getElementById('new-word'),cat=document.getElementById('new-cat').value,w=inp.value.trim(); if(!w) return; if(words.some(function(x){ return x.word===w; })){ flashEl(inp); return; } words.push({id:uid(),word:w,cat:cat,patterns:[w],ui_type:'button'}); saveWords(); inp.value=''; renderWords(); }
-function delWord(id,e){ e.stopPropagation(); var w=words.filter(function(x){ return x.id===id; })[0]; if(!w||!confirm('「'+w.word+'」を削除しますか？')) return; words=words.filter(function(x){ return x.id!==id; }); saveWords(); renderWords(); }
-function addPattern(id){ var inp=document.getElementById('pinput-'+id),val=inp.value.trim(); if(!val) return; var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return; if(w.patterns.indexOf(val)>=0){ flashEl(inp); return; } w.patterns.push(val); saveWords(); refreshPatternList(w); inp.value=''; }
-function delPattern(id,pi){ var w=words.filter(function(x){ return x.id===id; })[0]; if(!w) return; if(w.patterns[pi]===w.word){ alert('送信ワード本体は削除できません'); return; } w.patterns.splice(pi,1); saveWords(); refreshPatternList(w); }
-function refreshPatternList(w){ var el=document.getElementById('plist-'+w.id); if(!el) return; el.innerHTML=(w.patterns||[]).map(function(p,pi){ var isMain=(p===w.word); if(isMain) return '<div class="pattern-chip"><span class="main-chip">送信</span><span>'+esc(p)+'</span></div>'; return '<div class="pattern-chip"><span>'+esc(p)+'</span><button class="del-pat-btn" onclick="delPattern(\''+w.id+'\','+pi+')">✕</button></div>'; }).join(''); }
-function resetWords(){ if(!confirm('全ワードをデフォルトに戻しますか？')) return; words=makeDefaultWords(); saveWords(); renderWords(); }
-function exportData(){ var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(words,null,2)],{type:'application/json'})); a.download='medvoice_words.json'; a.click(); }
-function importClick(){ document.getElementById('import-file').click(); }
-function importData(e){ var f=e.target.files[0]; if(!f) return; var r=new FileReader(); r.onload=function(ev){ try{ var d=JSON.parse(ev.target.result); if(!Array.isArray(d)) throw 0; words=d; saveWords(); renderWords(); alert('インポート完了'); }catch(err){ alert('形式エラー'); } }; r.readAsText(f); }
-
-// ─── SETTINGS ─────────────────────────────────────────
-function initSettings(){
-  document.getElementById('key-display').textContent=deviceKey;
-  var mc=document.getElementById('min-chars'); mc.value=getSetting('min_chars','2'); document.getElementById('min-chars-val').textContent=mc.value+'文字以上'; updateSensBar('min-chars');
-  var ms=document.getElementById('momentary-sec'); ms.value=getSetting('momentary_sec','2'); document.getElementById('momentary-sec-val').textContent=ms.value+'秒';
-  var ts=document.getElementById('toggle-sec'); ts.value=getSetting('toggle_sec','30'); document.getElementById('toggle-sec-val').textContent=ts.value+'秒';
-  var mm=document.getElementById('match-mode'); mm.value=matchMode; mm.onchange=function(e){ matchMode=e.target.value; setSetting('matchMode',matchMode); };
-}
-
-// ─── LOG ──────────────────────────────────────────────
-function addLog(opt){
-  var log=document.getElementById('log');
-  var now=new Date(); var t=pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
-  var row=document.createElement('div');
-  if(opt.type==='sys'){
-    row.className='log-row sys';
-    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw sys">SYSTEM</span><span class="ls sys" style="margin-left:auto;">'+esc(opt.status)+'</span></div>';
-  } else if(opt.type==='result'){
-    var cls=opt.ok?'ok':'ng';
-    var icon=opt.ok?'🖥✓':'🖥✗';
-    row.className='log-row '+(opt.ok?'ok':'ng');
-    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw '+cls+'">'+icon+' '+esc(opt.word)+'</span><span class="ls '+cls+'" style="margin-left:auto;">'+esc(opt.status)+'</span></div>';
-  } else if(opt.type==='filtered'){
-    row.className='log-row filtered';
-    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw filtered">— '+esc(opt.word)+'</span><span class="ls filtered" style="margin-left:auto;">フィルター</span></div>';
-  } else {
-    var cls=!opt.ok?(opt.status==='接続待ち'?'alias':'ng'):(opt.isAlias?'alias':'ok');
-    var icon=!opt.ok?(opt.status==='接続待ち'?'⏳':'✗'):(opt.isAlias?'⚠':'✓');
-    var sub='';
-    if(opt.isAlias&&opt.ok) sub='<div class="log-sub">認識: <span class="raw">「'+esc(opt.raw)+'」</span> → 送信: 「'+esc(opt.word)+'」</div>';
-    else if(!opt.ok&&opt.status==='不一致') sub='<div class="log-sub">「'+esc(opt.raw)+'」はワードリストに未登録</div>';
-    else if(!opt.ok&&opt.status==='接続待ち') sub='<div class="log-sub">接続完了後に自動送信します</div>';
-    row.className='log-row '+cls;
-    row.innerHTML='<div class="log-main"><span class="lt">'+t+'</span><span class="lw '+cls+'">'+icon+' '+esc(opt.word)+'</span><span class="ls '+cls+'" style="margin-left:auto;">'+esc(opt.status)+'</span></div>'+sub;
-  }
-  log.insertBefore(row,log.firstChild);
-  while(log.children.length>30) log.removeChild(log.lastChild);
-}
-function showFB(msg,type){ var el=document.getElementById('feedback'); el.textContent=msg; el.className='show fb-'+type; clearTimeout(el._t); el._t=setTimeout(function(){ el.classList.remove('show'); },2800); }
-
-// ─── INIT ─────────────────────────────────────────────
-window.onload=function(){
-  var savedUrl=localStorage.getItem('ws_url');
-  if(savedUrl){ document.getElementById('ws-input').value=savedUrl; connectWS(savedUrl); }
-
-  // モード復元（デフォルトはトグル）
-  recMode = getSetting('rec_mode','toggle');
-  setMode(recMode);
-
-  document.getElementById('new-word').addEventListener('keydown',function(e){ if(e.key==='Enter') addWord(); });
-};
-</script>
-</body>
-</html>
