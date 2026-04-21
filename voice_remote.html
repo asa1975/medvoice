@@ -723,6 +723,22 @@ function exitInputMode(){
   inputModeActive = false;
   if(inputModeRecog){ try{ inputModeRecog.stop(); }catch(e){} inputModeRecog=null; }
   document.getElementById('input-mode-overlay').classList.remove('show');
+  // トグルモードで録音中だった場合は録音を再開
+  if(recMode==='toggle' && isRec){
+    // recogが止まってる可能性があるので再起動
+    setTimeout(function(){
+      if(isRec && recMode==='toggle'){
+        if(!recog){
+          startRec();
+        } else {
+          try{ recog.start(); }catch(e){
+            recog=null;
+            startRec();
+          }
+        }
+      }
+    }, 300);
+  }
 }
 
 // 日本語/英語の数字表現をアラビア数字に変換
@@ -775,7 +791,12 @@ function startInputRecog(){
         }
         final += best || toArabicNumber(raw);
       } else {
-        interim += ev.results[i][0].transcript;
+        // interimでも確定ワードを検知したら即送信
+        var interimRaw = ev.results[i][0].transcript.trim();
+        if(getConfirmWords().indexOf(interimRaw)>=0){ inputModeConfirm(); return; }
+        if(getClearWords().indexOf(interimRaw)>=0)  { inputModeClear();   return; }
+        if(getCancelWords().indexOf(interimRaw)>=0) { inputModeCancel();  return; }
+        interim += interimRaw;
       }
     }
     var interimConverted = toArabicNumber(interim);
@@ -798,10 +819,11 @@ function startInputRecog(){
 
 function inputModeConfirm(){
   if(!inputModeText){ exitInputMode(); return; }
+  var sentText = inputModeText;
   // キーボード入力をラズパイに送信
   if(isConnected()){
-    ws.send(JSON.stringify({type:'keyboard_input', text:inputModeText, key:deviceKey}));
-    addLog({type:'send', word:inputModeText, raw:inputModeText, isAlias:false, ok:true, status:'入力送信'});
+    ws.send(JSON.stringify({type:'keyboard_input', text:sentText, key:deviceKey}));
+    addLog({type:'send', word:sentText, raw:sentText, isAlias:false, ok:true, status:'入力送信'});
   }
   // Enterも送信
   setTimeout(function(){
@@ -809,6 +831,20 @@ function inputModeConfirm(){
       ws.send(JSON.stringify({type:'keyboard_enter', key:deviceKey}));
     }
   }, 300);
+  // 確定内容をおうむ返し
+  try{
+    window.speechSynthesis.cancel();
+    var utt = new SpeechSynthesisUtterance(sentText);
+    utt.lang  = 'ja-JP';
+    utt.rate  = parseFloat(getSetting('speak_rate','1.1'));
+    utt.pitch = parseFloat(getSetting('speak_pitch','1.1'));
+    utt.volume = 1.0;
+    var voices = window.speechSynthesis.getVoices();
+    var jaVoice = voices.find(function(v){ return v.lang==='ja-JP' && v.localService; })
+               || voices.find(function(v){ return v.lang==='ja-JP'; });
+    if(jaVoice) utt.voice = jaVoice;
+    window.speechSynthesis.speak(utt);
+  }catch(e){}
   exitInputMode();
 }
 
