@@ -428,6 +428,27 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);display:flex
   </div>
 
   <div class="card">
+    <div class="card-label">⌨ 入力確定ワード設定</div>
+    <div class="info-box" style="margin-bottom:10px;">
+      入力モード中にこのワードを言うと確定されます。<br>
+      カンマ区切りで複数設定可能。
+    </div>
+    <div class="setting-row">
+      <label>確定ワード</label>
+      <input type="text" id="confirm-words" class="conn-input" style="width:100%;" value="確定,けってい,送信,決定">
+    </div>
+    <div class="setting-row">
+      <label>クリアワード</label>
+      <input type="text" id="clear-words" class="conn-input" style="width:100%;" value="クリア,消去,消して">
+    </div>
+    <div class="setting-row">
+      <label>キャンセルワード</label>
+      <input type="text" id="cancel-words" class="conn-input" style="width:100%;" value="キャンセル,取り消し">
+    </div>
+    <button class="btn-full outline" onclick="saveInputWords()" style="margin-top:4px;">💾 保存</button>
+  </div>
+
+  <div class="card">
     <div class="card-label">マッチング設定</div>
     <div class="setting-row">
       <label>一致モード</label>
@@ -515,8 +536,17 @@ function speakWord(word){
     window.speechSynthesis.cancel();
     var utt = new SpeechSynthesisUtterance(text);
     utt.lang  = 'ja-JP';
-    utt.rate  = parseFloat(getSetting('speak_rate','1.0'));
-    utt.pitch = parseFloat(getSetting('speak_pitch','1.0'));
+    utt.rate  = parseFloat(getSetting('speak_rate','1.1'));
+    utt.pitch = parseFloat(getSetting('speak_pitch','1.1'));
+    utt.volume = 1.0;
+    // 日本語音声を優先的に選ぶ
+    var voices = window.speechSynthesis.getVoices();
+    var jaVoice = voices.find(function(v){
+      return v.lang === 'ja-JP' && v.localService;
+    }) || voices.find(function(v){
+      return v.lang === 'ja-JP';
+    });
+    if(jaVoice) utt.voice = jaVoice;
     window.speechSynthesis.speak(utt);
   }catch(e){}
 }
@@ -598,49 +628,49 @@ function copyKey(){
 function makeDefaultWords(){
   return [
     // ── シーケンシャルイベント ──
-    {id:uid(),word:'入室時確認',      cat:'med',patterns:['入室時確認','入室確認','にゅうしつじかくにん','にゅうしつかくにん']},
-    {id:uid(),word:'退室時確認',      cat:'med',patterns:['退室時確認','退室確認','たいしつじかくにん','たいしつかくにん']},
-    {id:uid(),word:'挿管',            cat:'med',patterns:['挿管','そうかん','送還','早管','挿管する']},
-    {id:uid(),word:'抜管',            cat:'med',patterns:['抜管','ばっかん','抜缶','抜管する']},
-    {id:uid(),word:'麻酔開始',        cat:'med',patterns:['麻酔開始','ますいかいし','麻酔を開始','麻酔開始する']},
-    {id:uid(),word:'麻酔終了',        cat:'med',patterns:['麻酔終了','ますいしゅうりょう','麻酔を終了','麻酔終了する']},
-    {id:uid(),word:'Vライン挿入',     cat:'med',patterns:['Vライン挿入','ブイライン挿入','静脈ライン挿入','静脈ラン挿入','ブイラインそうにゅう','V ライン挿入']},
-    {id:uid(),word:'Vライン抜去',     cat:'med',patterns:['Vライン抜去','ブイライン抜去','静脈ライン抜去','ブイラインばっきょ']},
-    {id:uid(),word:'Aライン挿入',     cat:'med',patterns:['Aライン挿入','エーライン挿入','動脈ライン挿入','エーラインそうにゅう','A ライン挿入']},
-    {id:uid(),word:'Aライン抜去',     cat:'med',patterns:['Aライン抜去','エーライン抜去','動脈ライン抜去','エーラインばっきょ']},
-    {id:uid(),word:'動脈圧測定開始',  cat:'med',patterns:['動脈圧測定開始','どうみゃくあつそくていかいし','動脈圧開始']},
-    {id:uid(),word:'動脈圧測定終了',  cat:'med',patterns:['動脈圧測定終了','どうみゃくあつそくていしゅうりょう','動脈圧終了']},
-    {id:uid(),word:'手術開始',        cat:'med',patterns:['手術開始','しゅじゅつかいし','手術を開始','手術開始する']},
-    {id:uid(),word:'手術終了',        cat:'med',patterns:['手術終了','しゅじゅつしゅうりょう','手術を終了','手術終了する']},
-    {id:uid(),word:'分離肺換気開始',  cat:'med',patterns:['分離肺換気開始','ぶんりはいかんきかいし','分離換気開始']},
-    {id:uid(),word:'分離肺換気終了',  cat:'med',patterns:['分離肺換気終了','ぶんりはいかんきしゅうりょう','分離換気終了']},
-    {id:uid(),word:'気腹開始',        cat:'med',patterns:['気腹開始','きふくかいし','気腹を開始']},
-    {id:uid(),word:'気腹終了',        cat:'med',patterns:['気腹終了','きふくしゅうりょう','気腹を終了']},
-    {id:uid(),word:'硬膜外麻酔（胸）',cat:'med',patterns:['硬膜外麻酔（胸）','硬膜外麻酔胸','こうまくがいますいきょう','胸部硬膜外麻酔','胸の硬膜外']},
-    {id:uid(),word:'硬膜外麻酔（腰）',cat:'med',patterns:['硬膜外麻酔（腰）','硬膜外麻酔腰','こうまくがいますいこし','腰部硬膜外麻酔','腰の硬膜外']},
-    {id:uid(),word:'脊椎麻酔',        cat:'med',patterns:['脊椎麻酔','脊髄麻酔','せきついますい','せきずいますい','脊椎']},
-    {id:uid(),word:'神経ブロック',    cat:'med',patterns:['神経ブロック','しんけいぶろっく','神経ブロックする']},
-    {id:uid(),word:'CV挿入',          cat:'med',patterns:['CV挿入','シーブイ挿入','中心静脈挿入','シーブイそうにゅう','CV 挿入']},
-    {id:uid(),word:'帝王切開',        cat:'med',patterns:['帝王切開','ていおうせっかい','帝王切開する']},
-    {id:uid(),word:'肺動脈圧測定開始',cat:'med',patterns:['肺動脈圧測定開始','はいどうみゃくあつそくていかいし','肺動脈圧開始']},
-    {id:uid(),word:'肺動脈圧測定終了',cat:'med',patterns:['肺動脈圧測定終了','はいどうみゃくあつそくていしゅうりょう','肺動脈圧終了']},
-    {id:uid(),word:'胃管挿入',        cat:'med',patterns:['胃管挿入','いかんそうにゅう','胃管を挿入','胃管挿入する']},
-    {id:uid(),word:'胃管抜去',        cat:'med',patterns:['胃管抜去','いかんばっきょ','胃管を抜去']},
-    {id:uid(),word:'TEE挿入',         cat:'med',patterns:['TEE挿入','ティーイーイー挿入','経食道エコー挿入','ティーイーイーそうにゅう']},
-    {id:uid(),word:'TEE抜去',         cat:'med',patterns:['TEE抜去','ティーイーイー抜去','経食道エコー抜去','ティーイーイーばっきょ']},
-    {id:uid(),word:'術後鎮痛',        cat:'med',patterns:['術後鎮痛','じゅつごちんつう','術後の鎮痛']},
-    {id:uid(),word:'麻酔科リマークス',cat:'rec',patterns:['麻酔科リマークス','ますいかリマークス','麻酔科コメント','リマークス']},
-    {id:uid(),word:'麻酔導入終了',    cat:'med',patterns:['麻酔導入終了','ますいどうにゅうしゅうりょう','導入終了','麻酔導入完了']},
-    {id:uid(),word:'退室時バイタル',  cat:'rec',patterns:['退室時バイタル','たいしつじバイタル','退室バイタル','退室時のバイタル']},
+    {id:uid(),word:'入室時確認',      cat:'med',patterns:['入室時確認','入室確認','にゅうしつじかくにん','にゅうしつかくにん'],speak_text:'にゅうしつじかくにん'},
+    {id:uid(),word:'退室時確認',      cat:'med',patterns:['退室時確認','退室確認','たいしつじかくにん','たいしつかくにん'],speak_text:'たいしつじかくにん'},
+    {id:uid(),word:'挿管',            cat:'med',patterns:['挿管','そうかん','送還','早管','挿管する'],speak_text:'そうかん'},
+    {id:uid(),word:'抜管',            cat:'med',patterns:['抜管','ばっかん','抜缶','抜管する'],speak_text:'ばっかん'},
+    {id:uid(),word:'麻酔開始',        cat:'med',patterns:['麻酔開始','ますいかいし','麻酔を開始','麻酔開始する'],speak_text:'ますいかいし'},
+    {id:uid(),word:'麻酔終了',        cat:'med',patterns:['麻酔終了','ますいしゅうりょう','麻酔を終了','麻酔終了する'],speak_text:'ますいしゅうりょう'},
+    {id:uid(),word:'Vライン挿入',     cat:'med',patterns:['Vライン挿入','ブイライン挿入','静脈ライン挿入','静脈ラン挿入','ブイラインそうにゅう','V ライン挿入'],speak_text:'ブイラインそうにゅう'},
+    {id:uid(),word:'Vライン抜去',     cat:'med',patterns:['Vライン抜去','ブイライン抜去','静脈ライン抜去','ブイラインばっきょ'],speak_text:'ブイラインばっきょ'},
+    {id:uid(),word:'Aライン挿入',     cat:'med',patterns:['Aライン挿入','エーライン挿入','動脈ライン挿入','エーラインそうにゅう','A ライン挿入'],speak_text:'エーラインそうにゅう'},
+    {id:uid(),word:'Aライン抜去',     cat:'med',patterns:['Aライン抜去','エーライン抜去','動脈ライン抜去','エーラインばっきょ'],speak_text:'エーラインばっきょ'},
+    {id:uid(),word:'動脈圧測定開始',  cat:'med',patterns:['動脈圧測定開始','どうみゃくあつそくていかいし','動脈圧開始'],speak_text:'どうみゃくあつそくていかいし'},
+    {id:uid(),word:'動脈圧測定終了',  cat:'med',patterns:['動脈圧測定終了','どうみゃくあつそくていしゅうりょう','動脈圧終了'],speak_text:'どうみゃくあつそくていしゅうりょう'},
+    {id:uid(),word:'手術開始',        cat:'med',patterns:['手術開始','しゅじゅつかいし','手術を開始','手術開始する'],speak_text:'しゅじゅつかいし'},
+    {id:uid(),word:'手術終了',        cat:'med',patterns:['手術終了','しゅじゅつしゅうりょう','手術を終了','手術終了する'],speak_text:'しゅじゅつしゅうりょう'},
+    {id:uid(),word:'分離肺換気開始',  cat:'med',patterns:['分離肺換気開始','ぶんりはいかんきかいし','分離換気開始'],speak_text:'ぶんりはいかんきかいし'},
+    {id:uid(),word:'分離肺換気終了',  cat:'med',patterns:['分離肺換気終了','ぶんりはいかんきしゅうりょう','分離換気終了'],speak_text:'ぶんりはいかんきしゅうりょう'},
+    {id:uid(),word:'気腹開始',        cat:'med',patterns:['気腹開始','きふくかいし','気腹を開始'],speak_text:'きふくかいし'},
+    {id:uid(),word:'気腹終了',        cat:'med',patterns:['気腹終了','きふくしゅうりょう','気腹を終了'],speak_text:'きふくしゅうりょう'},
+    {id:uid(),word:'硬膜外麻酔（胸）',cat:'med',patterns:['硬膜外麻酔（胸）','硬膜外麻酔胸','こうまくがいますいきょう','胸部硬膜外麻酔','胸の硬膜外'],speak_text:'こうまくがいますいきょう'},
+    {id:uid(),word:'硬膜外麻酔（腰）',cat:'med',patterns:['硬膜外麻酔（腰）','硬膜外麻酔腰','こうまくがいますいこし','腰部硬膜外麻酔','腰の硬膜外'],speak_text:'こうまくがいますいこし'},
+    {id:uid(),word:'脊椎麻酔',        cat:'med',patterns:['脊椎麻酔','脊髄麻酔','せきついますい','せきずいますい','脊椎'],speak_text:'せきついますい'},
+    {id:uid(),word:'神経ブロック',    cat:'med',patterns:['神経ブロック','しんけいぶろっく','神経ブロックする'],speak_text:'しんけいブロック'},
+    {id:uid(),word:'CV挿入',          cat:'med',patterns:['CV挿入','シーブイ挿入','中心静脈挿入','シーブイそうにゅう','CV 挿入'],speak_text:'シーブイそうにゅう'},
+    {id:uid(),word:'帝王切開',        cat:'med',patterns:['帝王切開','ていおうせっかい','帝王切開する'],speak_text:'ていおうせっかい'},
+    {id:uid(),word:'肺動脈圧測定開始',cat:'med',patterns:['肺動脈圧測定開始','はいどうみゃくあつそくていかいし','肺動脈圧開始'],speak_text:'はいどうみゃくあつそくていかいし'},
+    {id:uid(),word:'肺動脈圧測定終了',cat:'med',patterns:['肺動脈圧測定終了','はいどうみゃくあつそくていしゅうりょう','肺動脈圧終了'],speak_text:'はいどうみゃくあつそくていしゅうりょう'},
+    {id:uid(),word:'胃管挿入',        cat:'med',patterns:['胃管挿入','いかんそうにゅう','胃管を挿入','胃管挿入する'],speak_text:'いかんそうにゅう'},
+    {id:uid(),word:'胃管抜去',        cat:'med',patterns:['胃管抜去','いかんばっきょ','胃管を抜去'],speak_text:'いかんばっきょ'},
+    {id:uid(),word:'TEE挿入',         cat:'med',patterns:['TEE挿入','ティーイーイー挿入','経食道エコー挿入','ティーイーイーそうにゅう'],speak_text:'ティーイーイーそうにゅう'},
+    {id:uid(),word:'TEE抜去',         cat:'med',patterns:['TEE抜去','ティーイーイー抜去','経食道エコー抜去','ティーイーイーばっきょ'],speak_text:'ティーイーイーばっきょ'},
+    {id:uid(),word:'術後鎮痛',        cat:'med',patterns:['術後鎮痛','じゅつごちんつう','術後の鎮痛'],speak_text:'じゅつごちんつう'},
+    {id:uid(),word:'麻酔科リマークス',cat:'rec',patterns:['麻酔科リマークス','ますいかリマークス','麻酔科コメント','リマークス'],speak_text:'ますいかリマークス'},
+    {id:uid(),word:'麻酔導入終了',    cat:'med',patterns:['麻酔導入終了','ますいどうにゅうしゅうりょう','導入終了','麻酔導入完了'],speak_text:'ますいどうにゅうしゅうりょう'},
+    {id:uid(),word:'退室時バイタル',  cat:'rec',patterns:['退室時バイタル','たいしつじバイタル','退室バイタル','退室時のバイタル'],speak_text:'たいしつじバイタル'},
     // ── 薬剤 ──
-    {id:uid(),word:'プロポフォール',  cat:'med',patterns:['プロポフォール','ぷろぽふぉーる','プロポ','プロポフォール投与']},
-    {id:uid(),word:'ネオシネジン',    cat:'med',patterns:['ネオシネジン','ねおしねじん','ネオシネ','フェニレフリン']},
-    {id:uid(),word:'エフェドリン',    cat:'med',patterns:['エフェドリン','えふぇどりん','エフェド']},
-    {id:uid(),word:'デキサート',      cat:'med',patterns:['デキサート','でぃきさーと','デキサ','デキサメタゾン']},
-    {id:uid(),word:'オンダンセトロン',cat:'med',patterns:['オンダンセトロン','おんだんせとろん','オンダンセ','ゾフラン']},
-    {id:uid(),word:'スガマデクス',    cat:'med',patterns:['スガマデクス','すがまでくす','スガマ','ブリディオン']},
-    {id:uid(),word:'レミフェンタニル',cat:'med',patterns:['レミフェンタニル','れみふぇんたにる','レミフェン','レミフェンタ','アルチバ']},
-    {id:uid(),word:'ロクロニウム',    cat:'med',patterns:['ロクロニウム','ろくろにうむ','ロクロニ','エスメロン']},
+    {id:uid(),word:'プロポフォール',  cat:'med',patterns:['プロポフォール','ぷろぽふぉーる','プロポ','プロポフォール投与'],speak_text:'プロポフォール'},
+    {id:uid(),word:'ネオシネジン',    cat:'med',patterns:['ネオシネジン','ねおしねじん','ネオシネ','フェニレフリン'],speak_text:'ネオシネジン'},
+    {id:uid(),word:'エフェドリン',    cat:'med',patterns:['エフェドリン','えふぇどりん','エフェド'],speak_text:'エフェドリン'},
+    {id:uid(),word:'デキサート',      cat:'med',patterns:['デキサート','でぃきさーと','デキサ','デキサメタゾン'],speak_text:'デキサート'},
+    {id:uid(),word:'オンダンセトロン',cat:'med',patterns:['オンダンセトロン','おんだんせとろん','オンダンセ','ゾフラン'],speak_text:'オンダンセトロン'},
+    {id:uid(),word:'スガマデクス',    cat:'med',patterns:['スガマデクス','すがまでくす','スガマ','ブリディオン'],speak_text:'スガマデクス'},
+    {id:uid(),word:'レミフェンタニル',cat:'med',patterns:['レミフェンタニル','れみふぇんたにる','レミフェン','レミフェンタ','アルチバ'],speak_text:'レミフェンタニル'},
+    {id:uid(),word:'ロクロニウム',    cat:'med',patterns:['ロクロニウム','ろくろにうむ','ロクロニ','エスメロン'],speak_text:'ロクロニウム'},
   ];
 }
 
@@ -734,18 +764,10 @@ function startInputRecog(){
     for(var i=ev.resultIndex;i<ev.results.length;i++){
       if(ev.results[i].isFinal){
         var raw = ev.results[i][0].transcript.trim();
-        // 「確定」「けってい」「送信」で確定
-        if(raw==='確定'||raw==='けってい'||raw==='送信'||raw==='決定'){
-          inputModeConfirm(); return;
-        }
-        // 「クリア」「消去」でクリア
-        if(raw==='クリア'||raw==='消去'||raw==='消して'){
-          inputModeClear(); return;
-        }
-        // 「キャンセル」でキャンセル
-        if(raw==='キャンセル'||raw==='取り消し'){
-          inputModeCancel(); return;
-        }
+        // 確定・クリア・キャンセルワード（設定から取得）
+        if(getConfirmWords().indexOf(raw)>=0){ inputModeConfirm(); return; }
+        if(getClearWords().indexOf(raw)>=0)  { inputModeClear();   return; }
+        if(getCancelWords().indexOf(raw)>=0) { inputModeCancel();  return; }
         var best='';
         for(var j=0;j<ev.results[i].length;j++){
           var cand = toArabicNumber(ev.results[i][j].transcript);
@@ -1160,16 +1182,17 @@ function renderWordCard(w){
     +'<button class="btn-xs'+inpActive+'" onclick="setWordUiType(\''+w.id+'\',\'input_field\')" id="uitype-inp-'+w.id+'">📝 入力フィールド</button>'
     +'</div>'
     +'<div class="pattern-label">送信時の読み上げ</div>'
-    +'<div class="pattern-add-row" style="margin-bottom:12px;">'
-    +'<input class="pattern-input" id="speak-'+w.id+'" type="text" value="'+esc(speakText)+'" placeholder="読み上げテキスト（空欄で読み上げなし）" maxlength="40">'
-    +'<button class="btn-xs" onclick="saveSpeakText(\''+w.id+'\')">保存</button>'
-    +'<button class="btn-xs" style="background:var(--bg);color:var(--accent);border:1.5px solid var(--accent);" onclick="testSpeak(\''+w.id+'\')">▶</button>'
+    +'<div class="pattern-label">送信時の読み上げ</div>'
+    +'<input class="pattern-input" id="speak-'+w.id+'" type="text" value="'+esc(speakText)+'" placeholder="読み上げテキスト（空欄で読み上げなし）" maxlength="40" style="margin-bottom:6px;">'
+    +'<div style="display:flex;gap:6px;margin-bottom:12px;">'
+    +'<button class="btn-xs" style="flex:1;" onclick="saveSpeakText(\''+w.id+'\')" >💾 保存</button>'
+    +'<button class="btn-xs" style="flex:1;background:var(--bg);color:var(--accent);border:1.5px solid var(--accent);" onclick="testSpeak(\''+w.id+'\')" >▶ テスト</button>'
     +'</div>'
     +'<div class="pattern-label">認識パターン</div>'
     +'<div class="pattern-list" id="plist-'+w.id+'">'+pChips+'</div>'
-    +'<div class="pattern-add-row">'
+    +'<div style="display:flex;gap:6px;">'
     +'<input class="pattern-input" id="pinput-'+w.id+'" type="text" placeholder="誤変換パターンを追加" maxlength="30">'
-    +'<button class="btn-xs" onclick="addPattern(\''+w.id+'\')">＋</button>'
+    +'<button class="btn-xs" onclick="addPattern(\''+w.id+'\')" >＋</button>'
     +'</div></div></div>';
 }
 function setWordUiType(id, type){
@@ -1223,7 +1246,20 @@ function initSettings(){
   var sp=document.getElementById('speak-pitch'); sp.value=getSetting('speak_pitch','1.0'); sp.onchange=function(e){ setSetting('speak_pitch',e.target.value); };
   var bok=document.getElementById('beep-ok'); bok.value=getSetting('beep_ok','popon_up'); bok.onchange=function(e){ setSetting('beep_ok',e.target.value); };
   var bfail=document.getElementById('beep-fail'); bfail.value=getSetting('beep_fail','popon_down'); bfail.onchange=function(e){ setSetting('beep_fail',e.target.value); };
+  // 確定ワード
+  document.getElementById('confirm-words').value = getSetting('confirm_words','確定,けってい,送信,決定');
+  document.getElementById('clear-words').value   = getSetting('clear_words','クリア,消去,消して');
+  document.getElementById('cancel-words').value  = getSetting('cancel_words','キャンセル,取り消し');
 }
+function saveInputWords(){
+  setSetting('confirm_words', document.getElementById('confirm-words').value.trim());
+  setSetting('clear_words',   document.getElementById('clear-words').value.trim());
+  setSetting('cancel_words',  document.getElementById('cancel-words').value.trim());
+  showFB('💾 確定ワードを保存しました','ok');
+}
+function getConfirmWords(){ return getSetting('confirm_words','確定,けってい,送信,決定').split(',').map(function(s){ return s.trim(); }); }
+function getClearWords()  { return getSetting('clear_words','クリア,消去,消して').split(',').map(function(s){ return s.trim(); }); }
+function getCancelWords() { return getSetting('cancel_words','キャンセル,取り消し').split(',').map(function(s){ return s.trim(); }); }
 
 // ─── LOG ──────────────────────────────────────────────
 function addLog(opt){
