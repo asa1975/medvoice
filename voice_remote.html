@@ -707,10 +707,14 @@ var inputModeWord    = '';
 var inputModeRecog   = null;
 var inputModeText    = '';
 
+var wasRecActive = false;  // 入力モード前の録音状態を保存
+
 function enterInputMode(word){
   inputModeActive = true;
   inputModeWord   = word;
   inputModeText   = '';
+  // 入力モード前の録音状態を保存
+  wasRecActive = isRec && recMode==='toggle';
   document.getElementById('input-mode-field-name').textContent = '「'+word+'」に入力中';
   document.getElementById('input-mode-text').textContent = '---';
   document.getElementById('input-mode-interim').textContent = '';
@@ -723,21 +727,14 @@ function exitInputMode(){
   inputModeActive = false;
   if(inputModeRecog){ try{ inputModeRecog.stop(); }catch(e){} inputModeRecog=null; }
   document.getElementById('input-mode-overlay').classList.remove('show');
-  // トグルモードで録音中だった場合は録音を再開
-  if(recMode==='toggle' && isRec){
-    // recogが止まってる可能性があるので再起動
+  // 入力モード前にトグル録音中だったら再開
+  if(wasRecActive){
+    wasRecActive = false;
     setTimeout(function(){
-      if(isRec && recMode==='toggle'){
-        if(!recog){
-          startRec();
-        } else {
-          try{ recog.start(); }catch(e){
-            recog=null;
-            startRec();
-          }
-        }
+      if(recMode==='toggle' && !inputModeActive){
+        startRec();
       }
-    }, 300);
+    }, 400);
   }
 }
 
