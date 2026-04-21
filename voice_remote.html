@@ -708,6 +708,7 @@ var inputModeRecog   = null;
 var inputModeText    = '';
 
 var wasRecActive = false;  // 入力モード前の録音状態を保存
+var inputSpeakTimer = null; // 入力モード読み上げデバウンス用
 
 function enterInputMode(word){
   inputModeActive = true;
@@ -725,8 +726,12 @@ function enterInputMode(word){
 
 function exitInputMode(){
   inputModeActive = false;
+  clearTimeout(inputSpeakTimer);
+  window.speechSynthesis.cancel();
   if(inputModeRecog){ try{ inputModeRecog.stop(); }catch(e){} inputModeRecog=null; }
   document.getElementById('input-mode-overlay').classList.remove('show');
+  // 連続送信防止フラグをリセット（同じ入力フィールドをまた呼べるように）
+  lastSentWord = '';
   // 入力モード前にトグル録音中だったら再開
   if(wasRecActive){
     wasRecActive = false;
@@ -798,11 +803,29 @@ function startInputRecog(){
     }
     var interimConverted = toArabicNumber(interim);
     var cur = (final || interimConverted).trim();
-    document.getElementById('input-mode-interim').textContent = cur ? '認識中: '+cur : '';
-    if(final && cur){
+    if(cur){
+      // interim・finalどちらでもすぐにinputModeTextに反映
       inputModeText = cur;
       document.getElementById('input-mode-text').textContent = cur;
       document.getElementById('input-mode-interim').textContent = '';
+      // 認識内容を音声で読み上げ（デバウンス：300ms）
+      clearTimeout(inputSpeakTimer);
+      inputSpeakTimer = setTimeout(function(){
+        if(!inputModeActive) return;
+        try{
+          window.speechSynthesis.cancel();
+          var utt = new SpeechSynthesisUtterance(cur);
+          utt.lang   = 'ja-JP';
+          utt.rate   = parseFloat(getSetting('speak_rate','1.1'));
+          utt.pitch  = parseFloat(getSetting('speak_pitch','1.1'));
+          utt.volume = 1.0;
+          var voices = window.speechSynthesis.getVoices();
+          var jaVoice = voices.find(function(v){ return v.lang==='ja-JP'&&v.localService; })
+                     || voices.find(function(v){ return v.lang==='ja-JP'; });
+          if(jaVoice) utt.voice = jaVoice;
+          window.speechSynthesis.speak(utt);
+        }catch(e){}
+      }, 300);
     }
   };
   inputModeRecog.onerror = function(ev){
